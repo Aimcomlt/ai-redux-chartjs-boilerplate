@@ -1,17 +1,22 @@
 import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
+//import { Counter } from './features/counter/Counter';
+import { ChartI } from './components/chart001';
+import { ChartII } from './components/chart002';
+// import { ChartII } from './components/chart002'
+//import { dices } from './components/chart001';
 import './App.css';
 
+
 function App() {
+
+
+//   <button onClick={(() => dices(1,2), console.log(dices(1,2)))}>RND</button>
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
+        <ChartI />
+        <ChartII />
         <span>
           <span>Learn </span>
           <a
