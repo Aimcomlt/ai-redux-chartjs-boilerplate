@@ -56,13 +56,10 @@ export function ChartII() {
 
     })
 }
-    return <div style={{display: 'flexbox', width: '900px'}}>
 
-              <button kind='primary' size='2x2' style={{ borderRadius: '9px', marginTop: '25px', marginRight: '12px'}} onClick={() => setInterval(() => {fetchData("min1")}, 60100)}>⏳START 1 MIN BRAIN CYCLE</button>
-              <button kind='primary' size='2x2' style={{ borderRadius: '9px', marginTop: '25px', marginRight: '12px'}} onClick={() => fetchData("min1")}>START TRAINNING SESSIONS</button>
-              <br /> 
+    return <div style={{display: 'flexbox', width: '900px'}} onChange={() => fetchData("min1")}>
 
-              <Line data={state.data} options={{responsive: true}}/> 
+              <Line data={state.dataB} options={{responsive: true}}/> 
               <br />
 
 

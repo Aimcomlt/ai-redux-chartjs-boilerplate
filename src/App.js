@@ -3,14 +3,11 @@ import React from 'react';
 import { ChartI } from './components/chart001';
 import { ChartII } from './components/chart002';
 // import { ChartII } from './components/chart002'
-//import { dices } from './components/chart001';
 import './App.css';
 
 
 function App() {
 
-
-//   <button onClick={(() => dices(1,2), console.log(dices(1,2)))}>RND</button>
 
   return (
     <div className="App">

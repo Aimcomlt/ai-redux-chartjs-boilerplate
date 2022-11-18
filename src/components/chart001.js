@@ -59,14 +59,16 @@ if(chartSize.length >= 2) {chartSize.splice(0, 1)}
         tickAmount
     })
 }
-    return <div style={{display: 'flexbox', width: '900px'}}>
+    return <div style={{display: 'flexbox', width: '900px', marginTop: '30px'}}>
 
-              <button kind='primary' size='2x2' style={{ borderRadius: '9px', marginTop: '25px', marginRight: '12px'}} onClick={() => setInterval(() => {fetchData("min1")}, 60100)}>⏳START 1 MIN BRAIN CYCLE</button>
-              <button kind='primary' size='2x2' style={{ borderRadius: '9px', marginTop: '25px', marginRight: '12px'}} onClick={() => fetchData("min1")}>START TRAINNING SESSIONS</button>
-              <br /> 
 
-              <Line data={state.data} options={{responsive: true}}/> 
+<div style={{width: '900px', backgroundColor: 'rgba(27, 26, 67, 0.27)', borderRadius: '9px'}}>
+<Line  data={state.data} options={{responsive: true}}/> 
               <br />
+              <button kind='primary' size='2x2' style={{ borderRadius: '9px', marginTop: '25px', marginRight: '12px', marginBottom: '12px'}} onClick={() => setInterval(() => {fetchData("min1")}, 60100)}>⏳START 1 MIN BRAIN CYCLE</button>
+              <button kind='primary' size='2x2' style={{ borderRadius: '9px', marginTop: '25px', marginRight: '12px', marginBottom: '12px'}} onClick={() => fetchData("min1")}>START TRAINNING SESSIONS</button>
+              <br /> 
+</div>
 
               <p>{tickAmount}</p>
               <br />
