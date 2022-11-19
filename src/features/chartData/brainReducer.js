@@ -134,14 +134,41 @@ const initalState = {
                                           //OpBrainResult
                                           {
                                             type: 'line',
-                                            label: "BRAIN ESTIMATED PRICE VALUE",
+                                            pointStyle: 'rectRot',
+                                            label: "BRAIN ONE ESTIMATED PRICE VALUE",
                                             data: payload.OpBrainResltSlice,
                                             tention: 0.9,
                                             backgroundColor: 'rgba(228, 202, 16, 1)',
                                             borderColor: 'rgba(248, 104, 21, 1)',
                                             pointBorderColor: 'rgba(25, 16, 1)',
+                                            borderWidth: 0.75,
                                             order: 3
                                             },
+                                           // OpBrainResltSlice002
+                                           {
+                                            type: 'line',
+                                            pointStyle: 'rectRot',
+                                            label: "BRAIN TWO ESTIMATED PRICE VALUE",
+                                            data: payload.OpBrainResltSlice002,
+                                            tention: 0.9,
+                                            backgroundColor: 'rgba(255, 52, 3, 1)',
+                                            borderColor: 'rgba(255, 52, 3, 1)',
+                                            pointBorderColor: 'rgba(255, 52, 3, 1)',
+                                            borderWidth: 0.75,
+                                            order: 3
+                                            },
+                                            {
+                                              type: 'line',
+                                              pointStyle: 'rectRot',
+                                              label: "BRAIN THREE ESTIMATED PRICE VALUE",
+                                              data: payload.OpBrainResltSlice003,
+                                              tention: 0.9,
+                                              backgroundColor: 'rgba(255, 52, 90, 1)',
+                                              borderColor: 'rgba(255, 52, 90, 1)',
+                                              pointBorderColor: 'rgba(255, 52, 90, 1)',
+                                              borderWidth: 0.75,
+                                              order: 3
+                                              }
                                       ]
                                     },
                         }

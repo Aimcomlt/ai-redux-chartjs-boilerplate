@@ -2,18 +2,34 @@ import axios from 'axios';
 import { chartSize } from '../../components/chart001';
 const brain = require('brain.js');
 
-
 const config = {
   iterations: 20000,
   errorThresh: 0.05,
+  inputSize: 3,
+  outputSize: 1,
   log: true,
-  learningRate: 0.3,
-  momentum: 0.13,
+  learningRate: 0.4,
+  momentum: 0.23,
+  sizes: [4, 4, 4, 12, 6, 3],
   hiddenLayers: [4, 4, 4, 12, 6, 3], // array of ints for the sizes of the hidden layers in the network
-  activation: 'tanh' // supported activation types: ['sigmoid', 'relu', 'leaky-relu', 'tanh'],
-  //leakyReluAlpha: 0.13, // supported for activation type 'leaky-relu'
+  activation: 'tanh', // supported activation types: ['sigmoid', 'relu', 'leaky-relu', 'tanh'],
+ //leakyReluAlpha: 0.13, // supported for activation type 'leaky-relu'
 };
-const BrainOne = new brain.NeuralNetwork(config);
+
+const mySavedBrainOne = new Map();
+
+  //localStorage.clear();
+  //localStorage.setItem("OriginalBrainOne", JSON.stringify(brainClone({sizes:[3,3,1]})));
+ // console.log(JSON.parse(localStorage.getItem("OriginalBrainOne")))
+
+
+//console.log(mySavedBrainOne.get('OriginalBrainOne'));
+
+
+
+
+let BrainOne = new brain.NeuralNetwork(config);
+const BrainTwo = new brain.NeuralNetwork(config);
 
   const epoxNum = [];
   const open = [];
@@ -29,6 +45,12 @@ const BrainOne = new brain.NeuralNetwork(config);
 
   const OpBrainResult = [];
   let OpBrainResltSlice = [];
+
+  const OpBrainResult002 = [];
+  let OpBrainResltSlice002 = [];
+
+  const OpBrainResult003 = [];
+  let OpBrainResltSlice003 = [];
 
   let OPlatess = [];
   let Epoch = [];
@@ -119,7 +141,12 @@ for(let i = 0; i < open.length; i++) {
    
    })
 }
-console.log('TRAINNING SET: ', BrainOneTrainningSet)
+console.log('TRAINNING SET: ', BrainOneTrainningSet);
+
+//////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////BRAIN ONE
+
+
 BrainOne.train(BrainOneTrainningSet, {    
                       
   iterations: 20000,
@@ -127,7 +154,7 @@ BrainOne.train(BrainOneTrainningSet, {
   log: true,
   learningRate: 0.3,
   momentum: 0.13,
-  hiddenLayers: [4], // array of ints for the sizes of the hidden layers in the network
+  hiddenLayers: [4, 4, 4, 12, 6, 3], // array of ints for the sizes of the hidden layers in the network
   activation: 'tanh', // supported activation types: ['sigmoid', 'relu', 'leaky-relu', 'tanh'],
  //leakyReluAlpha: 0.13, // supported for activation type 'leaky-relu'
 
@@ -136,16 +163,85 @@ BrainOne.train(BrainOneTrainningSet, {
  hgh: high[high.length - 1] * 0.00001, 
  lw: low[low.length - 1] * 0.00001, 
  cl: close[close.length - 1] * 0.00001,
- })
+ });
+
+
  OpBrainResult.push(BrainOneRun.op / 0.00001);
+ mySavedBrainOne.set('OriginalBrainOne', JSON.stringify(BrainOne)); // set
+
  OpBrainResltSlice = OpBrainResult.slice(start, end).map((item) => {
   return OpBrainResltSlice=item
- })
- console.log('PREDICTION RESULT: ', OpBrainResult, 'FROM SOURCE: ', BrainOneRun.op);
+ });
+
+ console.log('PREDICTION LINE 1 RESULT: ', OpBrainResult, 'FROM SOURCE: ', BrainOneRun.op);
  console.log('%c BRAIN ONE NEURAL NETWORK: ', 'color: red', BrainOne)
+ console.log(JSON.parse(mySavedBrainOne.get('OriginalBrainOne')));
+ //const brainHandle = localStorage.getItem("OriginalBrainOne");
+ //console.log(brainHandle)
+ //console.log('SAVED NEURAL NETWORK', JSON.parse(window.localStorage.getItem("BRAIN001")))
+ ///////////////////////////////////////////////////////////////////////
+ ////////////////////////////////////////////////////////////BRAIN TWO
+
+ BrainTwo.train(BrainOneTrainningSet, {    
+                      
+  iterations: 20000,
+  errorThresh: 0.05,
+  log: true,
+  learningRate: 0.4,
+  momentum: 0.23,
+  hiddenLayers: [4, 4, 4, 12, 6, 3], // array of ints for the sizes of the hidden layers in the network
+  activation: 'tanh', // supported activation types: ['sigmoid', 'relu', 'leaky-relu', 'tanh'],
+ //leakyReluAlpha: 0.13, // supported for activation type 'leaky-relu'
+
+});
+ const BrainTwoRun = BrainTwo.run({
+ hgh: high[high.length - 1] * 0.00001, 
+ lw: low[low.length - 1] * 0.00001, 
+ cl: close[close.length - 1] * 0.00001,
+ })
+ OpBrainResult002.push(BrainTwoRun.op / 0.00001);
+ OpBrainResltSlice002 = OpBrainResult002.slice(start, end).map((item) => {
+  return OpBrainResltSlice002=item
+ })
+ console.log('PREDICTION LINE 2 RESULT: ', OpBrainResult002, 'FROM SOURCE: ', BrainTwoRun.op);
+ console.log('%c BRAIN TWO NEURAL NETWORK: ', 'color: orange', BrainTwo);
+ //if(BrainOne === true) {window.localStorage.setItem("BrainOneSaved", JSON.stringify(BrainOne))};
+ //console.log(JSON.parse(window.localStorage.getItem('BrainOneSaved')))
+
+ //mySavedBrainOne
+ let BrainOneSaved = new brain.NeuralNetwork(mySavedBrainOne)
+ BrainOneSaved.train(BrainOneTrainningSet, {    
+                      
+  iterations: 20000,
+  errorThresh: 0.05,
+  inputSize: 3,
+  outputSize: 1,
+  log: true,
+  learningRate: 0.4,
+  momentum: 0.23,
+  sizes: [4, 4, 4, 12, 6, 3],
+  hiddenLayers: [4, 4, 4, 12, 6, 3], // array of ints for the sizes of the hidden layers in the network
+  activation: 'tanh', // supported activation types: ['sigmoid', 'relu', 'leaky-relu', 'tanh'],
+ //leakyReluAlpha: 0.13, // supported for activation type 'leaky-relu'
+
+});
+ const BrainThreeRun = BrainOneSaved.run({
+ hgh: high[high.length - 1] * 0.00001, 
+ lw: low[low.length - 1] * 0.00001, 
+ cl: close[close.length - 1] * 0.00001,
+ })
+ OpBrainResult003.push(BrainThreeRun.op / 0.00001);
+ OpBrainResltSlice003 = OpBrainResult003.slice(start, end).map((item) => {
+  return OpBrainResltSlice003=item
+ })
+ console.log('PREDICTION LINE 3 RESULT: ', OpBrainResult002, 'FROM SOURCE: ', BrainThreeRun.op);
+ console.log('%c BRAIN THREE NEURAL NETWORK: ', 'color: blue', BrainOneSaved);
+
 dispatch({
     type: "SUCCESS_BITCOIN",
     payload: {
+      OpBrainResltSlice003,
+      OpBrainResltSlice002,
         OpBrainResltSlice,
         AvrOpLatessSlice,
         Epoch,
