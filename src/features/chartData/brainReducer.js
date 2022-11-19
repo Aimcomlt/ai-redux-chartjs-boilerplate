@@ -122,7 +122,7 @@ const initalState = {
                                         {
                                           type: 'line',
                                           label: "OPEN LATESS AVERAGE",
-                                          data: payload.AvrOpLatess,
+                                          data: payload.AvrOpLatessSlice,
                                           tention: 0.9,
                                           backgroundColor: 'rgba(0, 255, 0, 1)',
                                           borderColor: '	rgba(0, 255, 0, 1)',

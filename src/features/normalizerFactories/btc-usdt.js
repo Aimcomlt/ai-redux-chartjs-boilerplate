@@ -22,6 +22,10 @@ const BrainOne = new brain.NeuralNetwork(config);
   const close = [];
 
   const AvrOpLatess = [];
+  let AvrOpLatessSlice = []; 
+
+
+
 
   const OpBrainResult = [];
   let OpBrainResltSlice = [];
@@ -85,12 +89,20 @@ export const getData = ({
          Epoch = epoxNum.slice(a, b).map((item) => {
           return Epoch=item
         })
-console.log(OPlatess.length)
-let avrageOPlatess = OPlatess.reduce((h1,h2) => {
+console.log(OPlatess.length) // will allways be the value of the state by default 5 or any other state ex: 10 20 30 500 that the client will choose in the session
+//Knowing the state value is all so the array length. We can build a simple average line that will update with the state's value
+const avrageOPlatess = OPlatess.reduce((h1,h2) => {
   return (h1 + h2)
 })
- AvrOpLatess.push(avrageOPlatess / OPlatess.length);
-console.log(AvrOpLatess)
+
+ AvrOpLatess.push(avrageOPlatess / OPlatess.length * 1);
+ 
+ console.log('AVRAGE CHECK OUT OF THE BOX: ', AvrOpLatess)
+  AvrOpLatessSlice = AvrOpLatess.slice(start, end).map((item) => {
+  return AvrOpLatessSlice=item
+ });
+
+console.log('OPEN AVRAGE from SLICE FUNCTION: ', AvrOpLatessSlice)
 console.log('OPEN && EPOCH ARRAY :', OPlatess, Epoch, '-----','LATESS: ', open[open.length - 1]);
 
 const BrainOneTrainningSet = [];
@@ -134,8 +146,8 @@ BrainOne.train(BrainOneTrainningSet, {
 dispatch({
     type: "SUCCESS_BITCOIN",
     payload: {
-      OpBrainResltSlice,
-        AvrOpLatess,
+        OpBrainResltSlice,
+        AvrOpLatessSlice,
         Epoch,
         OPlatess,
         epoxNum,
