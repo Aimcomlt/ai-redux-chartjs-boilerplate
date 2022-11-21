@@ -2,7 +2,7 @@ import React from 'react';
 //import { Counter } from './features/counter/Counter';
 import { ChartI } from './components/chart001';
 import { ChartII } from './components/chart002';
-// import { ChartII } from './components/chart002'
+import { ChartIII } from './components/chart003'
 import './App.css';
 
 
@@ -14,6 +14,7 @@ function App() {
       <header className="App-header">
         <ChartI />
         <ChartII />
+        <ChartIII />
         <span>
           <span>Learn </span>
           <a

@@ -31,6 +31,12 @@ const mySavedBrainOne = new Map();
 let BrainOne = new brain.NeuralNetwork(config);
 const BrainTwo = new brain.NeuralNetwork(config);
 
+let brainMesurement001 = [];
+let brMesurementColor001 = [];
+
+let brainMesurementSlice001 = [];
+let brMesurementSliceColor001 = [];
+
   const epoxNum = [];
   const open = [];
   const high = [];
@@ -219,7 +225,7 @@ BrainOne.train(BrainOneTrainningSet, {
   log: true,
   learningRate: 0.4,
   momentum: 0.23,
-  sizes: [4, 4, 4, 12, 6, 3],
+  sizes: [3, 4, 4, 4, 12, 6, 3, 1],
   hiddenLayers: [4, 4, 4, 12, 6, 3], // array of ints for the sizes of the hidden layers in the network
   activation: 'tanh', // supported activation types: ['sigmoid', 'relu', 'leaky-relu', 'tanh'],
  //leakyReluAlpha: 0.13, // supported for activation type 'leaky-relu'
@@ -237,9 +243,40 @@ BrainOne.train(BrainOneTrainningSet, {
  console.log('PREDICTION LINE 3 RESULT: ', OpBrainResult002, 'FROM SOURCE: ', BrainThreeRun.op);
  console.log('%c BRAIN THREE NEURAL NETWORK: ', 'color: blue', BrainOneSaved);
 
+ //////////////////////////////
+if(OpBrainResult002[OpBrainResult002.length -1] > OpBrainResult003[OpBrainResult003.length -1]) 
+{ 
+ brainMesurement001.push(OpBrainResult002[OpBrainResult002.length -1] - OpBrainResult003[OpBrainResult003.length -1])
+}
+
+if(OpBrainResult002[OpBrainResult002.length -1]  > OpBrainResult003[OpBrainResult003.length -1]) 
+{ brMesurementColor001.push('rgba(42, 255, 3, 1)') 
+}
+
+if(OpBrainResult003[OpBrainResult003.length -1] > OpBrainResult002[OpBrainResult002.length -1]) 
+{ 
+brainMesurement001.push(OpBrainResult003[OpBrainResult003.length -1] - OpBrainResult002[OpBrainResult002.length -1])
+}
+
+if(OpBrainResult003[OpBrainResult003.length -1] > OpBrainResult002[OpBrainResult002.length -1]) 
+{ brMesurementColor001.push('rgba(255, 3, 3, 1)') 
+}
+
+brainMesurementSlice001 = brainMesurement001.slice(start, end).map((item) => {
+return brainMesurementSlice001=item
+})
+
+brMesurementSliceColor001 = brMesurementColor001.slice(start, end).map((item) => {
+ return brMesurementSliceColor001=item
+})
+console.log('MESUREMENT:', brainMesurementSlice001, 'COLOR: ', brMesurementSliceColor001)
+
+
 dispatch({
     type: "SUCCESS_BITCOIN",
     payload: {
+      brainMesurementSlice001,
+      brMesurementSliceColor001,
       OpBrainResltSlice003,
       OpBrainResltSlice002,
         OpBrainResltSlice,
