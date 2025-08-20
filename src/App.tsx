@@ -2,13 +2,10 @@ import React from 'react';
 //import { Counter } from './features/counter/Counter';
 import { ChartI } from './components/chart001';
 import { ChartII } from './components/chart002';
-import { ChartIII } from './components/chart003'
+import { ChartIII } from './components/chart003';
 import './App.css';
 
-
 function App() {
-
-
   return (
     <div className="App">
       <header className="App-header">
