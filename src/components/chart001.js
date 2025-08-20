@@ -12,6 +12,7 @@ import {
 import { Line } from 'react-chartjs-2';
 import { useDispatch, useSelector } from 'react-redux';
 import { getData } from '../features/normalizerFactories/btc-usdt';
+import { chartSize } from '../features/chartSettings';
 
 ChartJS.register(
   CategoryScale,
@@ -35,10 +36,6 @@ export const options = {
     },
   },
 };
-
-export let chartSize = [];
-//////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////
 
 export function ChartI() {
   const dispatch = useDispatch();
