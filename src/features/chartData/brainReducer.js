@@ -22,14 +22,14 @@ const initalState = {
         tention: 0.9,
         label: "OPEN LATESS",
         data: [],
-        backgroundColor: 'rgba(226, 153, 18, 0.9)',
-        borderColor: 'rgba(178, 116, 0, 1)',
-        pointBorderColor: 'rgba(25, 16, 0, 1)',
+        backgroundColor: 'rgba(0, 229, 255, 0.8)',
+        borderColor: 'rgba(0, 179, 209, 1)',
+        pointBorderColor: 'rgba(255,255,255,0.5)',
         options: {
           responsive: true
         }
       }],
-    },  
+    },
   }
   const brainReducer = (state = initalState, action) => {
     const { type, payload } = action;
@@ -60,9 +60,10 @@ const initalState = {
                               label: "OPEN LATESS PRICE",
                               data: payload.open,
                               radius: 1,
-                              backgroundColor: 'rgba(255, 0, 0, 1)',
-                              borderColor: '	rgba(255, 0, 0, 1)',
-                              pointBorderColor: 'rgba(25, 16, 1)',
+                              backgroundColor: 'rgba(0, 229, 255, 0.8)',
+                              borderColor: 'rgba(0, 179, 209, 1)',
+                              pointBorderColor: 'rgba(255,255,255,0.5)',
+                              pointHoverBackgroundColor: 'rgba(255,255,255,0.5)',
                               borderWidth: 0.5,
                               order: 2
                               },
@@ -72,9 +73,10 @@ const initalState = {
                               label: "HIGH LATESS PRICE",
                               data: payload.high, 
                               radius: 1,
-                              backgroundColor:'rgba(0,0,255, 0.7)',
-                              borderColor: 'rgba(0,0,255, 0.9)',
-                              pointBorderColor: 'rgba(0,0,255, 0.8)',    
+                              backgroundColor:'rgba(255, 0, 122, 0.8)',
+                              borderColor: 'rgba(217, 0, 103, 1)',
+                              pointBorderColor: 'rgba(255,255,255,0.5)',
+                              pointHoverBackgroundColor: 'rgba(255,255,255,0.5)',
                               borderWidth: 0.5,             
                               order: 3
                               },
@@ -84,9 +86,10 @@ const initalState = {
                               label: "LOW LATESS PRICE",
                               data: payload.low,
                               radius: 1,
-                              backgroundColor:'rgba(255,255,0, 0.8)',
-                              borderColor: 'rgba(255,255,0, 0.9)',
-                              pointBorderColor: 'rgba(255,255,0, 0.9)',    
+                              backgroundColor:'rgba(0, 255, 137, 0.8)',
+                              borderColor: 'rgba(0, 204, 110, 1)',
+                              pointBorderColor: 'rgba(255,255,255,0.5)',
+                              pointHoverBackgroundColor: 'rgba(255,255,255,0.5)',    
                               borderWidth: 0.5,              
                               order: 4
                               },
@@ -96,9 +99,10 @@ const initalState = {
                               label: "CLOSE LATESS PRICE",
                               data: payload.close,
                               radius: 1,
-                              backgroundColor:'rgba(10, 204, 0, 0.7)',
-                              borderColor: 'rgba(10, 204, 0, 0.9)',
-                              pointBorderColor: 'rgba(10, 204, 0, 0.7)',
+                              backgroundColor:'rgba(173, 0, 255, 0.8)',
+                              borderColor: 'rgba(111, 0, 193, 1)',
+                              pointBorderColor: 'rgba(255,255,255,0.5)',
+                              pointHoverBackgroundColor: 'rgba(255,255,255,0.5)',
                               borderWidth: 0.5,
                               order: 1
                               },
@@ -113,9 +117,9 @@ const initalState = {
                                         label: "OPEN LATESS PRICE",
                                         data: payload.OPlatess,
                                         tention: 0.9,
-                                        backgroundColor: 'rgba(255, 0, 0, 1)',
-                                        borderColor: '	rgba(255, 0, 0, 1)',
-                                        pointBorderColor: 'rgba(25, 16, 1)',
+                                        backgroundColor: 'rgba(0, 229, 255, 0.8)',
+                                        borderColor: 'rgba(0, 179, 209, 1)',
+                                        pointBorderColor: 'rgba(255,255,255,0.5)',
                                         order: 1
                                         },
                                         //AvrOpLatess
