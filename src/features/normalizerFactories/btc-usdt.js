@@ -2,7 +2,7 @@ import axios from 'axios';
 import { chartSize } from '../../components/chart001';
 const brain = require('brain.js');
 
-const config = {
+const createConfig = (activation = 'tanh', overrides = {}) => ({
   iterations: 20000,
   errorThresh: 0.05,
   inputSize: 3,
@@ -12,9 +12,10 @@ const config = {
   momentum: 0.23,
   sizes: [4, 4, 4, 12, 6, 3],
   hiddenLayers: [4, 4, 4, 12, 6, 3], // array of ints for the sizes of the hidden layers in the network
-  activation: 'tanh', // supported activation types: ['sigmoid', 'relu', 'leaky-relu', 'tanh'],
- //leakyReluAlpha: 0.13, // supported for activation type 'leaky-relu'
-};
+  activation, // supported activation types: ['sigmoid', 'relu', 'leaky-relu', 'tanh'],
+  //leakyReluAlpha: 0.13, // supported for activation type 'leaky-relu'
+  ...overrides,
+});
 
 const mySavedBrainOne = new Map();
 
@@ -28,8 +29,12 @@ const mySavedBrainOne = new Map();
 
 
 
-let BrainOne = new brain.NeuralNetwork(config);
-const BrainTwo = new brain.NeuralNetwork(config);
+const brainOneActivation = 'tanh';
+const brainTwoActivation = 'tanh';
+const brainThreeActivation = 'tanh';
+
+let BrainOne = new brain.NeuralNetwork(createConfig(brainOneActivation));
+const BrainTwo = new brain.NeuralNetwork(createConfig(brainTwoActivation));
 
 let brainMesurement001 = [];
 let brMesurementColor001 = [];
@@ -153,18 +158,10 @@ console.log('TRAINNING SET: ', BrainOneTrainningSet);
 /////////////////////////////////////////////////////////////////////BRAIN ONE
 
 
-BrainOne.train(BrainOneTrainningSet, {    
-                      
-  iterations: 20000,
-  errorThresh: 0.05,
-  log: true,
-  learningRate: 0.3,
-  momentum: 0.13,
-  hiddenLayers: [4, 4, 4, 12, 6, 3], // array of ints for the sizes of the hidden layers in the network
-  activation: 'tanh', // supported activation types: ['sigmoid', 'relu', 'leaky-relu', 'tanh'],
- //leakyReluAlpha: 0.13, // supported for activation type 'leaky-relu'
-
-});
+BrainOne.train(
+  BrainOneTrainningSet,
+  createConfig(brainOneActivation, { learningRate: 0.3, momentum: 0.13 })
+);
  const BrainOneRun = BrainOne.run({
  hgh: high[high.length - 1] * 0.00001, 
  lw: low[low.length - 1] * 0.00001, 
@@ -186,20 +183,9 @@ BrainOne.train(BrainOneTrainningSet, {
  //console.log(brainHandle)
  //console.log('SAVED NEURAL NETWORK', JSON.parse(window.localStorage.getItem("BRAIN001")))
  ///////////////////////////////////////////////////////////////////////
- ////////////////////////////////////////////////////////////BRAIN TWO
+////////////////////////////////////////////////////////////BRAIN TWO
 
- BrainTwo.train(BrainOneTrainningSet, {    
-                      
-  iterations: 20000,
-  errorThresh: 0.05,
-  log: true,
-  learningRate: 0.4,
-  momentum: 0.23,
-  hiddenLayers: [4, 4, 4, 12, 6, 3], // array of ints for the sizes of the hidden layers in the network
-  activation: 'tanh', // supported activation types: ['sigmoid', 'relu', 'leaky-relu', 'tanh'],
- //leakyReluAlpha: 0.13, // supported for activation type 'leaky-relu'
-
-});
+ BrainTwo.train(BrainOneTrainningSet, createConfig(brainTwoActivation));
  const BrainTwoRun = BrainTwo.run({
  hgh: high[high.length - 1] * 0.00001, 
  lw: low[low.length - 1] * 0.00001, 
@@ -215,22 +201,12 @@ BrainOne.train(BrainOneTrainningSet, {
  //console.log(JSON.parse(window.localStorage.getItem('BrainOneSaved')))
 
  //mySavedBrainOne
- let BrainOneSaved = new brain.NeuralNetwork(mySavedBrainOne)
- BrainOneSaved.train(BrainOneTrainningSet, {    
-                      
-  iterations: 20000,
-  errorThresh: 0.05,
-  inputSize: 3,
-  outputSize: 1,
-  log: true,
-  learningRate: 0.4,
-  momentum: 0.23,
+ let BrainOneSaved = new brain.NeuralNetwork(createConfig(brainThreeActivation));
+ BrainOneSaved.fromJSON(JSON.parse(mySavedBrainOne.get('OriginalBrainOne') || '{}'));
+ BrainOneSaved.train(BrainOneTrainningSet, {
+  ...createConfig(brainThreeActivation),
   sizes: [3, 4, 4, 4, 12, 6, 3, 1],
-  hiddenLayers: [4, 4, 4, 12, 6, 3], // array of ints for the sizes of the hidden layers in the network
-  activation: 'tanh', // supported activation types: ['sigmoid', 'relu', 'leaky-relu', 'tanh'],
- //leakyReluAlpha: 0.13, // supported for activation type 'leaky-relu'
-
-});
+ });
  const BrainThreeRun = BrainOneSaved.run({
  hgh: high[high.length - 1] * 0.00001, 
  lw: low[low.length - 1] * 0.00001, 
