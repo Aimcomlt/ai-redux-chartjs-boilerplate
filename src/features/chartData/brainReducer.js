@@ -135,8 +135,8 @@ const initalState = {
                                           {
                                             type: 'line',
                                             pointStyle: 'rectRot',
-                                            label: "BRAIN ONE ESTIMATED PRICE VALUE",
-                                            data: payload.OpBrainResltSlice,
+                                            label: "LSTM ONE ESTIMATED PRICE VALUE",
+                                            data: payload.OpBrainResltSlice.map((v) => Array.isArray(v) ? v[0] : v),
                                             tention: 0.9,
                                             backgroundColor: 'rgba(228, 202, 16, 1)',
                                             borderColor: 'rgba(248, 104, 21, 1)',
@@ -148,8 +148,8 @@ const initalState = {
                                            {
                                             type: 'line',
                                             pointStyle: 'rectRot',
-                                            label: "BRAIN TWO ESTIMATED PRICE VALUE",
-                                            data: payload.OpBrainResltSlice002,
+                                            label: "LSTM TWO ESTIMATED PRICE VALUE",
+                                            data: payload.OpBrainResltSlice002.map((v) => Array.isArray(v) ? v[0] : v),
                                             tention: 0.9,
                                             backgroundColor: 'rgba(255, 52, 3, 1)',
                                             borderColor: 'rgba(255, 52, 3, 1)',
@@ -160,8 +160,8 @@ const initalState = {
                                             {
                                               type: 'line',
                                               pointStyle: 'rectRot',
-                                              label: "BRAIN THREE ESTIMATED PRICE VALUE",
-                                              data: payload.OpBrainResltSlice003,
+                                              label: "LSTM THREE ESTIMATED PRICE VALUE",
+                                              data: payload.OpBrainResltSlice003.map((v) => Array.isArray(v) ? v[0] : v),
                                               tention: 0.9,
                                               backgroundColor: 'rgba(255, 52, 90, 1)',
                                               borderColor: 'rgba(255, 52, 90, 1)',
