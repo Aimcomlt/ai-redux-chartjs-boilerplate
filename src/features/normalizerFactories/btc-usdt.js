@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { chartSize } from '../../components/chart001';
+import { chartSize } from '../chartSettings';
 const brain = require('brain.js');
 
 const createConfig = (activation = 'tanh', overrides = {}) => ({
