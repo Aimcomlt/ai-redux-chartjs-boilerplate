@@ -12,29 +12,45 @@ const createConfig = (activation = 'tanh', overrides = {}) => ({
   momentum: 0.23,
   sizes: [4, 4, 4, 12, 6, 3],
   hiddenLayers: [4, 4, 4, 12, 6, 3], // array of ints for the sizes of the hidden layers in the network
-  activation, // supported activation types: ['sigmoid', 'relu', 'leaky-relu', 'tanh'],
+  activation, // supported activation types: ['sigmoid', 'relu', 'leaky-relu', 'tanh']
   //leakyReluAlpha: 0.13, // supported for activation type 'leaky-relu'
   ...overrides,
 });
 
-const mySavedBrainOne = new Map();
+// helper utilities to persist networks and track training progress
+const loadNetwork = (key, activation) => {
+  const net = new brain.NeuralNetwork(createConfig(activation));
+  if (typeof window !== 'undefined') {
+    const json = window.localStorage.getItem(key);
+    if (json) {
+      net.fromJSON(JSON.parse(json));
+    }
+  }
+  return net;
+};
 
-  //localStorage.clear();
-  //localStorage.setItem("OriginalBrainOne", JSON.stringify(brainClone({sizes:[3,3,1]})));
- // console.log(JSON.parse(localStorage.getItem("OriginalBrainOne")))
+const saveNetwork = (key, net) => {
+  if (typeof window !== 'undefined') {
+    window.localStorage.setItem(key, JSON.stringify(net.toJSON()));
+  }
+};
 
+const getLastIndex = () => {
+  if (typeof window !== 'undefined') {
+    return parseInt(window.localStorage.getItem('BrainTrainingIndex') || '0', 10);
+  }
+  return 0;
+};
 
-//console.log(mySavedBrainOne.get('OriginalBrainOne'));
-
-
-
+const setLastIndex = (idx) => {
+  if (typeof window !== 'undefined') {
+    window.localStorage.setItem('BrainTrainingIndex', String(idx));
+  }
+};
 
 const brainOneActivation = 'tanh';
 const brainTwoActivation = 'tanh';
 const brainThreeActivation = 'tanh';
-
-let BrainOne = new brain.NeuralNetwork(createConfig(brainOneActivation));
-const BrainTwo = new brain.NeuralNetwork(createConfig(brainTwoActivation));
 
 let brainMesurement001 = [];
 let brMesurementColor001 = [];
@@ -138,86 +154,86 @@ const avrageOPlatess = OPlatess.reduce((h1,h2) => {
 console.log('OPEN AVRAGE from SLICE FUNCTION: ', AvrOpLatessSlice)
 console.log('OPEN && EPOCH ARRAY :', OPlatess, Epoch, '-----','LATESS: ', open[open.length - 1]);
 
+// build training set using only new data
 const BrainOneTrainningSet = [];
-for(let i = 0; i < open.length; i++) {
+const lastIndex = getLastIndex();
+for (let i = Math.max(1, lastIndex); i < open.length; i++) {
   BrainOneTrainningSet.push({
-    input:{
-     hgh: high[i - 1] * 0.00001, 
-     lw: low[i - 1] * 0.00001, 
-     cl: close[i - 1] * 0.00001,
+    input: {
+      hgh: high[i - 1] * 0.00001,
+      lw: low[i - 1] * 0.00001,
+      cl: close[i - 1] * 0.00001,
     },
-    output:{
-     op: open[i - 1] * 0.00001
-    }
-   
-   })
+    output: {
+      op: open[i - 1] * 0.00001,
+    },
+  });
 }
 console.log('TRAINNING SET: ', BrainOneTrainningSet);
 
-//////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////BRAIN ONE
+// load existing networks or create new ones
+const BrainOne = loadNetwork('BrainOneNetwork', brainOneActivation);
+const BrainTwo = loadNetwork('BrainTwoNetwork', brainTwoActivation);
+const BrainThree = loadNetwork('BrainThreeNetwork', brainThreeActivation);
 
+if (BrainOneTrainningSet.length) {
+  BrainOne.train(
+    BrainOneTrainningSet,
+    createConfig(brainOneActivation, { learningRate: 0.3, momentum: 0.13 })
+  );
+  BrainTwo.train(BrainOneTrainningSet, createConfig(brainTwoActivation));
+  BrainThree.train(BrainOneTrainningSet, {
+    ...createConfig(brainThreeActivation),
+    sizes: [3, 4, 4, 4, 12, 6, 3, 1],
+  });
 
-BrainOne.train(
-  BrainOneTrainningSet,
-  createConfig(brainOneActivation, { learningRate: 0.3, momentum: 0.13 })
-);
- const BrainOneRun = BrainOne.run({
- hgh: high[high.length - 1] * 0.00001, 
- lw: low[low.length - 1] * 0.00001, 
- cl: close[close.length - 1] * 0.00001,
- });
+  saveNetwork('BrainOneNetwork', BrainOne);
+  saveNetwork('BrainTwoNetwork', BrainTwo);
+  saveNetwork('BrainThreeNetwork', BrainThree);
+  setLastIndex(open.length);
+}
 
+const BrainOneRun = BrainOne.run({
+  hgh: high[high.length - 1] * 0.00001,
+  lw: low[low.length - 1] * 0.00001,
+  cl: close[close.length - 1] * 0.00001,
+});
 
- OpBrainResult.push(BrainOneRun.op / 0.00001);
- mySavedBrainOne.set('OriginalBrainOne', JSON.stringify(BrainOne)); // set
+OpBrainResult.push(BrainOneRun.op / 0.00001);
+OpBrainResltSlice = OpBrainResult.slice(start, end).map((item) => {
+  return (OpBrainResltSlice = item);
+});
 
- OpBrainResltSlice = OpBrainResult.slice(start, end).map((item) => {
-  return OpBrainResltSlice=item
- });
+console.log('PREDICTION LINE 1 RESULT: ', OpBrainResult, 'FROM SOURCE: ', BrainOneRun.op);
+console.log('%c BRAIN ONE NEURAL NETWORK: ', 'color: red', BrainOne);
 
- console.log('PREDICTION LINE 1 RESULT: ', OpBrainResult, 'FROM SOURCE: ', BrainOneRun.op);
- console.log('%c BRAIN ONE NEURAL NETWORK: ', 'color: red', BrainOne)
- console.log(JSON.parse(mySavedBrainOne.get('OriginalBrainOne')));
- //const brainHandle = localStorage.getItem("OriginalBrainOne");
- //console.log(brainHandle)
- //console.log('SAVED NEURAL NETWORK', JSON.parse(window.localStorage.getItem("BRAIN001")))
- ///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////BRAIN TWO
 
- BrainTwo.train(BrainOneTrainningSet, createConfig(brainTwoActivation));
- const BrainTwoRun = BrainTwo.run({
- hgh: high[high.length - 1] * 0.00001, 
- lw: low[low.length - 1] * 0.00001, 
- cl: close[close.length - 1] * 0.00001,
- })
- OpBrainResult002.push(BrainTwoRun.op / 0.00001);
- OpBrainResltSlice002 = OpBrainResult002.slice(start, end).map((item) => {
-  return OpBrainResltSlice002=item
- })
- console.log('PREDICTION LINE 2 RESULT: ', OpBrainResult002, 'FROM SOURCE: ', BrainTwoRun.op);
- console.log('%c BRAIN TWO NEURAL NETWORK: ', 'color: orange', BrainTwo);
- //if(BrainOne === true) {window.localStorage.setItem("BrainOneSaved", JSON.stringify(BrainOne))};
- //console.log(JSON.parse(window.localStorage.getItem('BrainOneSaved')))
+const BrainTwoRun = BrainTwo.run({
+  hgh: high[high.length - 1] * 0.00001,
+  lw: low[low.length - 1] * 0.00001,
+  cl: close[close.length - 1] * 0.00001,
+});
+OpBrainResult002.push(BrainTwoRun.op / 0.00001);
+OpBrainResltSlice002 = OpBrainResult002.slice(start, end).map((item) => {
+  return (OpBrainResltSlice002 = item);
+});
+console.log('PREDICTION LINE 2 RESULT: ', OpBrainResult002, 'FROM SOURCE: ', BrainTwoRun.op);
+console.log('%c BRAIN TWO NEURAL NETWORK: ', 'color: orange', BrainTwo);
 
- //mySavedBrainOne
- let BrainOneSaved = new brain.NeuralNetwork(createConfig(brainThreeActivation));
- BrainOneSaved.fromJSON(JSON.parse(mySavedBrainOne.get('OriginalBrainOne') || '{}'));
- BrainOneSaved.train(BrainOneTrainningSet, {
-  ...createConfig(brainThreeActivation),
-  sizes: [3, 4, 4, 4, 12, 6, 3, 1],
- });
- const BrainThreeRun = BrainOneSaved.run({
- hgh: high[high.length - 1] * 0.00001, 
- lw: low[low.length - 1] * 0.00001, 
- cl: close[close.length - 1] * 0.00001,
- })
- OpBrainResult003.push(BrainThreeRun.op / 0.00001);
- OpBrainResltSlice003 = OpBrainResult003.slice(start, end).map((item) => {
-  return OpBrainResltSlice003=item
- })
- console.log('PREDICTION LINE 3 RESULT: ', OpBrainResult002, 'FROM SOURCE: ', BrainThreeRun.op);
- console.log('%c BRAIN THREE NEURAL NETWORK: ', 'color: blue', BrainOneSaved);
+// Brain three is a copy of brain one that can continue training
+const BrainThreeRun = BrainThree.run({
+  hgh: high[high.length - 1] * 0.00001,
+  lw: low[low.length - 1] * 0.00001,
+  cl: close[close.length - 1] * 0.00001,
+});
+OpBrainResult003.push(BrainThreeRun.op / 0.00001);
+OpBrainResltSlice003 = OpBrainResult003.slice(start, end).map((item) => {
+  return (OpBrainResltSlice003 = item);
+});
+console.log('PREDICTION LINE 3 RESULT: ', OpBrainResult003, 'FROM SOURCE: ', BrainThreeRun.op);
+console.log('%c BRAIN THREE NEURAL NETWORK: ', 'color: blue', BrainThree);
 
  //////////////////////////////
 if(OpBrainResult002[OpBrainResult002.length -1] > OpBrainResult003[OpBrainResult003.length -1]) 
