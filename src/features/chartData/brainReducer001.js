@@ -43,7 +43,7 @@ const initalState = {
                             {
                               type: 'bar',
                               label: "MESUREMENT",
-                              data: payload.brainMesurementSlice001,
+                              data: payload.brainMesurementSlice001.map((v) => Array.isArray(v) ? v[0] : v),
                               radius: 1,
                               backgroundColor: payload.brMesurementSliceColor001,
                               borderColor: payload.brMesurementSliceColor001,

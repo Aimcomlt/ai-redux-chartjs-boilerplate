@@ -19,7 +19,7 @@ const createConfig = (activation = 'tanh', overrides = {}) => ({
 
 // helper utilities to persist networks and track training progress
 const loadNetwork = (key, activation) => {
-  const net = new brain.NeuralNetwork(createConfig(activation));
+  const net = new brain.recurrent.LSTMTimeStep(createConfig(activation));
   if (typeof window !== 'undefined') {
     const json = window.localStorage.getItem(key);
     if (json) {
@@ -154,20 +154,14 @@ const avrageOPlatess = OPlatess.reduce((h1,h2) => {
 console.log('OPEN AVRAGE from SLICE FUNCTION: ', AvrOpLatessSlice)
 console.log('OPEN && EPOCH ARRAY :', OPlatess, Epoch, '-----','LATESS: ', open[open.length - 1]);
 
-// build training set using only new data
+// build training set using only new data in sequence format for LSTM
 const BrainOneTrainningSet = [];
 const lastIndex = getLastIndex();
 for (let i = Math.max(1, lastIndex); i < open.length; i++) {
-  BrainOneTrainningSet.push({
-    input: {
-      hgh: high[i - 1] * 0.00001,
-      lw: low[i - 1] * 0.00001,
-      cl: close[i - 1] * 0.00001,
-    },
-    output: {
-      op: open[i - 1] * 0.00001,
-    },
-  });
+  BrainOneTrainningSet.push([
+    [high[i - 1] * 0.00001, low[i - 1] * 0.00001, close[i - 1] * 0.00001],
+    [open[i - 1] * 0.00001],
+  ]);
 }
 console.log('TRAINNING SET: ', BrainOneTrainningSet);
 
@@ -193,46 +187,55 @@ if (BrainOneTrainningSet.length) {
   setLastIndex(open.length);
 }
 
-const BrainOneRun = BrainOne.run({
-  hgh: high[high.length - 1] * 0.00001,
-  lw: low[low.length - 1] * 0.00001,
-  cl: close[close.length - 1] * 0.00001,
-});
+const BrainOneRun = BrainOne.run([
+  [
+    high[high.length - 1] * 0.00001,
+    low[low.length - 1] * 0.00001,
+    close[close.length - 1] * 0.00001,
+  ],
+]);
 
-OpBrainResult.push(BrainOneRun.op / 0.00001);
+const BrainOneValue = Array.isArray(BrainOneRun) ? BrainOneRun[0] : BrainOneRun;
+OpBrainResult.push(BrainOneValue / 0.00001);
 OpBrainResltSlice = OpBrainResult.slice(start, end).map((item) => {
   return (OpBrainResltSlice = item);
 });
 
-console.log('PREDICTION LINE 1 RESULT: ', OpBrainResult, 'FROM SOURCE: ', BrainOneRun.op);
+console.log('PREDICTION LINE 1 RESULT: ', OpBrainResult, 'FROM SOURCE: ', BrainOneValue);
 console.log('%c BRAIN ONE NEURAL NETWORK: ', 'color: red', BrainOne);
 
 ///////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////BRAIN TWO
 
-const BrainTwoRun = BrainTwo.run({
-  hgh: high[high.length - 1] * 0.00001,
-  lw: low[low.length - 1] * 0.00001,
-  cl: close[close.length - 1] * 0.00001,
-});
-OpBrainResult002.push(BrainTwoRun.op / 0.00001);
+const BrainTwoRun = BrainTwo.run([
+  [
+    high[high.length - 1] * 0.00001,
+    low[low.length - 1] * 0.00001,
+    close[close.length - 1] * 0.00001,
+  ],
+]);
+const BrainTwoValue = Array.isArray(BrainTwoRun) ? BrainTwoRun[0] : BrainTwoRun;
+OpBrainResult002.push(BrainTwoValue / 0.00001);
 OpBrainResltSlice002 = OpBrainResult002.slice(start, end).map((item) => {
   return (OpBrainResltSlice002 = item);
 });
-console.log('PREDICTION LINE 2 RESULT: ', OpBrainResult002, 'FROM SOURCE: ', BrainTwoRun.op);
+console.log('PREDICTION LINE 2 RESULT: ', OpBrainResult002, 'FROM SOURCE: ', BrainTwoValue);
 console.log('%c BRAIN TWO NEURAL NETWORK: ', 'color: orange', BrainTwo);
 
 // Brain three is a copy of brain one that can continue training
-const BrainThreeRun = BrainThree.run({
-  hgh: high[high.length - 1] * 0.00001,
-  lw: low[low.length - 1] * 0.00001,
-  cl: close[close.length - 1] * 0.00001,
-});
-OpBrainResult003.push(BrainThreeRun.op / 0.00001);
+const BrainThreeRun = BrainThree.run([
+  [
+    high[high.length - 1] * 0.00001,
+    low[low.length - 1] * 0.00001,
+    close[close.length - 1] * 0.00001,
+  ],
+]);
+const BrainThreeValue = Array.isArray(BrainThreeRun) ? BrainThreeRun[0] : BrainThreeRun;
+OpBrainResult003.push(BrainThreeValue / 0.00001);
 OpBrainResltSlice003 = OpBrainResult003.slice(start, end).map((item) => {
   return (OpBrainResltSlice003 = item);
 });
-console.log('PREDICTION LINE 3 RESULT: ', OpBrainResult003, 'FROM SOURCE: ', BrainThreeRun.op);
+console.log('PREDICTION LINE 3 RESULT: ', OpBrainResult003, 'FROM SOURCE: ', BrainThreeValue);
 console.log('%c BRAIN THREE NEURAL NETWORK: ', 'color: blue', BrainThree);
 
  //////////////////////////////
