@@ -62,7 +62,7 @@ if(chartSize.length >= 2) {chartSize.splice(0, 1)}
     return <div style={{display: 'flexbox', width: '900px', marginTop: '30px'}}>
 
 
-<div style={{width: '900px', backgroundColor: 'rgba(27, 26, 67, 0.27)', borderRadius: '9px'}}>
+<div style={{width: '900px', backgroundColor: 'rgba(10,12,40,0.9)', borderRadius: '9px'}}>
 <Line  data={state.data} options={{responsive: true}}/> 
               <br />
               <button kind='primary' size='2x2' style={{ borderRadius: '9px', marginTop: '25px', marginRight: '12px', marginBottom: '12px'}} onClick={() => setInterval(() => {fetchData("min1")}, 60100)}>⏳START 1 MIN BRAIN CYCLE</button>
