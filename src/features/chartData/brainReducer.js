@@ -1,184 +1,192 @@
 const initalState = {
-    Loading: false,
-    data: {
-      labels: [],
-      datasets: [{
+  Loading: false,
+  data: {
+    labels: [],
+    datasets: [
+      {
         type: 'line',
-        tention: 0.9,
-        label: "BOT CHART PREDICTION",
+        tension: 0.9,
+        label: 'BOT CHART PREDICTION',
         data: [],
         backgroundColor: 'rgba(226, 153, 18, 0.9)',
         borderColor: 'rgba(178, 116, 0, 1)',
         pointBorderColor: 'rgba(25, 16, 0, 1)',
         options: {
-          responsive: true
-        }
-      }],
-    }, 
-    dataB: {
-      labels: [],
-      datasets: [{
+          responsive: true,
+        },
+      },
+    ],
+  },
+  dataB: {
+    labels: [],
+    datasets: [
+      {
         type: 'line',
-        tention: 0.9,
-        label: "OPEN LATESS",
+        tension: 0.9,
+        label: 'Open – Latest',
         data: [],
         backgroundColor: 'rgba(0, 229, 255, 0.8)',
         borderColor: 'rgba(0, 179, 209, 1)',
         pointBorderColor: 'rgba(255,255,255,0.5)',
         options: {
-          responsive: true
-        }
-      }],
-    },
-  }
-  const brainReducer = (state = initalState, action) => {
-    const { type, payload } = action;
-  
-    switch (type) {
-        case "AWAITING_BITCOIN":
-          return {
-            ...state,
-            loading: true
-          }
-        case "REJECTED_BITCOIN":
-          return {
-            ...state,
-            loading: false,
-          }
-        case "SUCCESS_BITCOIN":
-  
-            return {
-                ...state,
-                loading: false,
+          responsive: true,
+        },
+      },
+    ],
+  },
+};
+const brainReducer = (state = initalState, action) => {
+  const { type, payload } = action;
 
-                data: {
-                  labels: payload.epoxNum,
-                  text: 'EXPERIMENTAL',
-                  datasets: [
-                            {
-                              type: 'line',
-                              label: "OPEN LATESS PRICE",
-                              data: payload.open,
-                              radius: 1,
-                              backgroundColor: 'rgba(0, 229, 255, 0.8)',
-                              borderColor: 'rgba(0, 179, 209, 1)',
-                              pointBorderColor: 'rgba(255,255,255,0.5)',
-                              pointHoverBackgroundColor: 'rgba(255,255,255,0.5)',
-                              borderWidth: 0.5,
-                              order: 2
-                              },
-  
-                            {
-                              type: 'line',
-                              label: "HIGH LATESS PRICE",
-                              data: payload.high, 
-                              radius: 1,
-                              backgroundColor:'rgba(255, 0, 122, 0.8)',
-                              borderColor: 'rgba(217, 0, 103, 1)',
-                              pointBorderColor: 'rgba(255,255,255,0.5)',
-                              pointHoverBackgroundColor: 'rgba(255,255,255,0.5)',
-                              borderWidth: 0.5,             
-                              order: 3
-                              },
- 
-                            {
-                              type: 'line',
-                              label: "LOW LATESS PRICE",
-                              data: payload.low,
-                              radius: 1,
-                              backgroundColor:'rgba(0, 255, 137, 0.8)',
-                              borderColor: 'rgba(0, 204, 110, 1)',
-                              pointBorderColor: 'rgba(255,255,255,0.5)',
-                              pointHoverBackgroundColor: 'rgba(255,255,255,0.5)',    
-                              borderWidth: 0.5,              
-                              order: 4
-                              },
-           
-                            {
-                              type: 'line',
-                              label: "CLOSE LATESS PRICE",
-                              data: payload.close,
-                              radius: 1,
-                              backgroundColor:'rgba(173, 0, 255, 0.8)',
-                              borderColor: 'rgba(111, 0, 193, 1)',
-                              pointBorderColor: 'rgba(255,255,255,0.5)',
-                              pointHoverBackgroundColor: 'rgba(255,255,255,0.5)',
-                              borderWidth: 0.5,
-                              order: 1
-                              },
-                            ]
-                          },
-                          dataB: {
-                            labels: payload.Epoch,
-                            text: 'EXPERIMENTAL',
-                            datasets: [
-                                      {
-                                        type: 'line',
-                                        label: "OPEN LATESS PRICE",
-                                        data: payload.OPlatess,
-                                        tention: 0.9,
-                                        backgroundColor: 'rgba(0, 229, 255, 0.8)',
-                                        borderColor: 'rgba(0, 179, 209, 1)',
-                                        pointBorderColor: 'rgba(255,255,255,0.5)',
-                                        order: 1
-                                        },
-                                        //AvrOpLatess
-                                        {
-                                          type: 'line',
-                                          label: "OPEN LATESS AVERAGE",
-                                          data: payload.AvrOpLatessSlice,
-                                          tention: 0.9,
-                                          backgroundColor: 'rgba(0, 255, 0, 1)',
-                                          borderColor: '	rgba(0, 255, 0, 1)',
-                                          borderWidth: 1,
-                                          borderDash: [10, 5],
-                                          pointBorderColor: 'rgba(25, 16, 1)',
-                                          order: 2
-                                          },
-                                          //OpBrainResult
-                                          {
-                                            type: 'line',
-                                            pointStyle: 'rectRot',
-                                            label: "LSTM ONE ESTIMATED PRICE VALUE",
-                                            data: payload.OpBrainResltSlice.map((v) => Array.isArray(v) ? v[0] : v),
-                                            tention: 0.9,
-                                            backgroundColor: 'rgba(228, 202, 16, 1)',
-                                            borderColor: 'rgba(248, 104, 21, 1)',
-                                            pointBorderColor: 'rgba(25, 16, 1)',
-                                            borderWidth: 0.75,
-                                            order: 3
-                                            },
-                                           // OpBrainResltSlice002
-                                           {
-                                            type: 'line',
-                                            pointStyle: 'rectRot',
-                                            label: "LSTM TWO ESTIMATED PRICE VALUE",
-                                            data: payload.OpBrainResltSlice002.map((v) => Array.isArray(v) ? v[0] : v),
-                                            tention: 0.9,
-                                            backgroundColor: 'rgba(255, 52, 3, 1)',
-                                            borderColor: 'rgba(255, 52, 3, 1)',
-                                            pointBorderColor: 'rgba(255, 52, 3, 1)',
-                                            borderWidth: 0.75,
-                                            order: 3
-                                            },
-                                            {
-                                              type: 'line',
-                                              pointStyle: 'rectRot',
-                                              label: "LSTM THREE ESTIMATED PRICE VALUE",
-                                              data: payload.OpBrainResltSlice003.map((v) => Array.isArray(v) ? v[0] : v),
-                                              tention: 0.9,
-                                              backgroundColor: 'rgba(255, 52, 90, 1)',
-                                              borderColor: 'rgba(255, 52, 90, 1)',
-                                              pointBorderColor: 'rgba(255, 52, 90, 1)',
-                                              borderWidth: 0.75,
-                                              order: 3
-                                              }
-                                      ]
-                                    },
-                        }
-                        default: return state;
-                      }
-                    }
-              export default brainReducer;
-  
-  
+  switch (type) {
+    case 'AWAITING_BITCOIN':
+      return {
+        ...state,
+        loading: true,
+      };
+    case 'REJECTED_BITCOIN':
+      return {
+        ...state,
+        loading: false,
+      };
+    case 'SUCCESS_BITCOIN':
+      return {
+        ...state,
+        loading: false,
+
+        data: {
+          labels: payload.epoxNum,
+          text: 'EXPERIMENTAL',
+          datasets: [
+            {
+              type: 'line',
+              label: 'Open – Latest Price',
+              data: payload.open,
+              radius: 1,
+              backgroundColor: 'rgba(0, 229, 255, 0.8)',
+              borderColor: 'rgba(0, 179, 209, 1)',
+              pointBorderColor: 'rgba(255,255,255,0.5)',
+              pointHoverBackgroundColor: 'rgba(255,255,255,0.5)',
+              borderWidth: 0.5,
+              order: 2,
+            },
+
+            {
+              type: 'line',
+              label: 'High – Latest Price',
+              data: payload.high,
+              radius: 1,
+              backgroundColor: 'rgba(255, 0, 122, 0.8)',
+              borderColor: 'rgba(217, 0, 103, 1)',
+              pointBorderColor: 'rgba(255,255,255,0.5)',
+              pointHoverBackgroundColor: 'rgba(255,255,255,0.5)',
+              borderWidth: 0.5,
+              order: 3,
+            },
+
+            {
+              type: 'line',
+              label: 'Low – Latest Price',
+              data: payload.low,
+              radius: 1,
+              backgroundColor: 'rgba(0, 255, 137, 0.8)',
+              borderColor: 'rgba(0, 204, 110, 1)',
+              pointBorderColor: 'rgba(255,255,255,0.5)',
+              pointHoverBackgroundColor: 'rgba(255,255,255,0.5)',
+              borderWidth: 0.5,
+              order: 4,
+            },
+
+            {
+              type: 'line',
+              label: 'Close – Latest Price',
+              data: payload.close,
+              radius: 1,
+              backgroundColor: 'rgba(173, 0, 255, 0.8)',
+              borderColor: 'rgba(111, 0, 193, 1)',
+              pointBorderColor: 'rgba(255,255,255,0.5)',
+              pointHoverBackgroundColor: 'rgba(255,255,255,0.5)',
+              borderWidth: 0.5,
+              order: 1,
+            },
+          ],
+        },
+        dataB: {
+          labels: payload.Epoch,
+          text: 'EXPERIMENTAL',
+          datasets: [
+            {
+              type: 'line',
+              label: 'Open – Latest Price',
+              data: payload.OPlatess,
+              tension: 0.9,
+              backgroundColor: 'rgba(0, 229, 255, 0.8)',
+              borderColor: 'rgba(0, 179, 209, 1)',
+              pointBorderColor: 'rgba(255,255,255,0.5)',
+              order: 1,
+            },
+            //AvrOpLatess
+            {
+              type: 'line',
+              label: 'Open – Latest Average',
+              data: payload.AvrOpLatessSlice,
+              tension: 0.9,
+              backgroundColor: 'rgba(0, 255, 0, 1)',
+              borderColor: '	rgba(0, 255, 0, 1)',
+              borderWidth: 1,
+              borderDash: [10, 5],
+              pointBorderColor: 'rgba(25, 16, 1)',
+              order: 2,
+            },
+            //OpBrainResult
+            {
+              type: 'line',
+              pointStyle: 'rectRot',
+              label: 'LSTM ONE ESTIMATED PRICE VALUE',
+              data: payload.OpBrainResltSlice.map((v) =>
+                Array.isArray(v) ? v[0] : v,
+              ),
+              tension: 0.9,
+              backgroundColor: 'rgba(228, 202, 16, 1)',
+              borderColor: 'rgba(248, 104, 21, 1)',
+              pointBorderColor: 'rgba(25, 16, 1)',
+              borderWidth: 0.75,
+              order: 3,
+            },
+            // OpBrainResltSlice002
+            {
+              type: 'line',
+              pointStyle: 'rectRot',
+              label: 'LSTM TWO ESTIMATED PRICE VALUE',
+              data: payload.OpBrainResltSlice002.map((v) =>
+                Array.isArray(v) ? v[0] : v,
+              ),
+              tension: 0.9,
+              backgroundColor: 'rgba(255, 52, 3, 1)',
+              borderColor: 'rgba(255, 52, 3, 1)',
+              pointBorderColor: 'rgba(255, 52, 3, 1)',
+              borderWidth: 0.75,
+              order: 3,
+            },
+            {
+              type: 'line',
+              pointStyle: 'rectRot',
+              label: 'LSTM THREE ESTIMATED PRICE VALUE',
+              data: payload.OpBrainResltSlice003.map((v) =>
+                Array.isArray(v) ? v[0] : v,
+              ),
+              tension: 0.9,
+              backgroundColor: 'rgba(255, 52, 90, 1)',
+              borderColor: 'rgba(255, 52, 90, 1)',
+              pointBorderColor: 'rgba(255, 52, 90, 1)',
+              borderWidth: 0.75,
+              order: 3,
+            },
+          ],
+        },
+      };
+    default:
+      return state;
+  }
+};
+export default brainReducer;
