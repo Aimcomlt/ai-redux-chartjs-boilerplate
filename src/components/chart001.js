@@ -16,6 +16,7 @@ import { useGetOhlcQuery } from '../features/markets/marketApi';
 import { chartSize } from '../features/chartSettings';
 import { chartOptions } from '../charts/config';
 import { lineDataset } from '../charts/datasets';
+import { selectPredictionSeries } from '../selectors/seriesSelectors';
 
 ChartJS.register(
   CategoryScale,
@@ -29,7 +30,7 @@ ChartJS.register(
 );
 
 export function ChartI() {
-  const state = useSelector((state) => state.brain);
+  const { labels, values } = useSelector(selectPredictionSeries);
   const [tickAmount, setTickAmount] = useState(5);
   chartSize.push(tickAmount);
   if (chartSize.length >= 2) {
@@ -42,10 +43,8 @@ export function ChartI() {
   };
 
   const data = {
-    labels: state.data.labels,
-    datasets: state.data.datasets.map((ds) =>
-      lineDataset(ds.data, ds.label, ds.borderColor, ds.backgroundColor),
-    ),
+    labels,
+    datasets: [lineDataset(values, 'Predictions', 'rgba(226, 153, 18, 0.9)')],
   };
 
   return (
