@@ -17,6 +17,7 @@ import { useSelector } from 'react-redux';
 import { useGetOhlcQuery } from '../features/markets/marketApi';
 import { chartOptions } from '../charts/config';
 import { barDataset } from '../charts/datasets';
+import { selectMetricSeries } from '../selectors/seriesSelectors';
 
 ChartJS.register(
   CategoryScale,
@@ -34,14 +35,12 @@ ChartJS.register(
 ///////////////////////////////////////////////////////////////////////
 
 export function ChartIII() {
-  const state = useSelector((state) => state.brain001);
+  const { labels, values } = useSelector(selectMetricSeries);
   useGetOhlcQuery({ symbol: 'BTCUSDT', interval: '1m' });
 
   const data = {
-    labels: state.dataC.labels,
-    datasets: state.dataC.datasets.map((ds) =>
-      barDataset(ds.data, ds.label, ds.backgroundColor),
-    ),
+    labels,
+    datasets: [barDataset(values, 'Metrics', 'rgba(226, 153, 18, 0.9)')],
   };
 
   return (
