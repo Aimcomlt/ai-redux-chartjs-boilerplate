@@ -11,6 +11,8 @@ const initialState = {
     labels: [],
     values: [],
   },
+  modelJSON: null,
+  norm: null,
 };
 
 const brainSlice = createSlice({
@@ -33,10 +35,20 @@ const brainSlice = createSlice({
     setStatus(state, action) {
       state.status = action.payload;
     },
+    setModel(state, action) {
+      const { modelJSON = null, norm = null } = action.payload || {};
+      state.modelJSON = modelJSON;
+      state.norm = norm;
+    },
   },
 });
 
-export const { setHyperparams, setPredictions, setMetrics, setStatus } =
-  brainSlice.actions;
+export const {
+  setHyperparams,
+  setPredictions,
+  setMetrics,
+  setStatus,
+  setModel,
+} = brainSlice.actions;
 
 export default brainSlice.reducer;
