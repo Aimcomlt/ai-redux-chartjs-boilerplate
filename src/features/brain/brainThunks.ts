@@ -1,20 +1,37 @@
 import { setMetrics, setModel, setStatus } from './brainSlice';
+import type { AppDispatch, RootState } from '../../app/store';
 
 // Thunk to kick off training in a web worker and funnel progress back into
 // redux state.  It expects an object containing `{ series, hyperparams, norm }`.
 // Progress messages from the worker are stored under `metrics` where the
 // iteration number becomes the label and the error the value.
 
-export const startTraining = ({ series = [], hyperparams = {}, norm = null }) =>
-  (dispatch, getState) => {
+interface StartTrainingArgs {
+  series?: unknown[];
+  hyperparams?: Record<string, unknown>;
+  norm?: unknown;
+}
+
+interface WorkerMessage {
+  progress?: number;
+  done?: { modelJSON: unknown; norm: unknown };
+  error?: string;
+}
+
+export const startTraining = ({
+  series = [],
+  hyperparams = {},
+  norm = null,
+}: StartTrainingArgs) =>
+  (dispatch: AppDispatch, getState: () => RootState) => {
     const worker = new Worker(
-      new URL('../../workers/trainBrain.worker.js', import.meta.url),
+      new URL('../../workers/trainBrain.worker.ts', import.meta.url),
       { type: 'module' }
     );
 
     dispatch(setStatus('training'));
 
-    worker.onmessage = ({ data }) => {
+    worker.onmessage = ({ data }: MessageEvent<WorkerMessage>) => {
       const { progress, done, error } = data || {};
 
       if (typeof progress !== 'undefined') {

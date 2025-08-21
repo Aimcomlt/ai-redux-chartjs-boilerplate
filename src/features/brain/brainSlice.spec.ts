@@ -14,11 +14,11 @@ const initialState = {
   metrics: { labels: [], values: [] },
   modelJSON: null,
   norm: null,
-};
+} as const;
 
 describe('brain reducer', () => {
   it('should return the initial state', () => {
-    expect(reducer(undefined, { type: 'unknown' })).toEqual(initialState);
+    expect(reducer(undefined, { type: 'unknown' } as any)).toEqual(initialState);
   });
 
   it('should handle setHyperparams', () => {
