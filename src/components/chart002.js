@@ -16,6 +16,7 @@ import { useGetOhlcQuery } from '../features/markets/marketApi';
 import { chartOptions } from '../charts/config';
 import { lineDataset } from '../charts/datasets';
 import { selectMetricSeries } from '../selectors/seriesSelectors';
+import { selectChartSize } from '../features/chartSettings/chartSettingsSlice';
 
 ChartJS.register(
   CategoryScale,
@@ -33,6 +34,7 @@ ChartJS.register(
 
 export function ChartII() {
   const { labels, values } = useSelector(selectMetricSeries);
+  const tickAmount = useSelector(selectChartSize);
   useGetOhlcQuery({ symbol: 'BTCUSDT', interval: '1m' });
 
   const data = {
@@ -44,6 +46,7 @@ export function ChartII() {
     <div style={{ display: 'flexbox', width: '900px' }}>
       <Line data={data} options={chartOptions} />
       <br />
+      <p>{tickAmount}</p>
     </div>
   );
 }

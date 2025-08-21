@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -11,9 +11,12 @@ import {
   Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useGetOhlcQuery } from '../features/markets/marketApi';
-import { chartSize } from '../features/chartSettings';
+import {
+  selectChartSize,
+  setChartSize,
+} from '../features/chartSettings/chartSettingsSlice';
 import { chartOptions } from '../charts/config';
 import { lineDataset } from '../charts/datasets';
 import { selectPredictionSeries } from '../selectors/seriesSelectors';
@@ -30,12 +33,9 @@ ChartJS.register(
 );
 
 export function ChartI() {
+  const dispatch = useDispatch();
   const { labels, values } = useSelector(selectPredictionSeries);
-  const [tickAmount, setTickAmount] = useState(5);
-  chartSize.push(tickAmount);
-  if (chartSize.length >= 2) {
-    chartSize.splice(0, 1);
-  }
+  const tickAmount = useSelector(selectChartSize);
 
   const { refetch } = useGetOhlcQuery({ symbol: 'BTCUSDT', interval: '1m' });
   const fetchData = () => {
@@ -96,7 +96,7 @@ export function ChartI() {
 
       <div style={{ display: 'flexbox', flexDirection: 'row' }}>
         <button
-          onClick={() => setTickAmount(5)}
+          onClick={() => dispatch(setChartSize(5))}
           style={{
             borderRadius: '9px',
             marginTop: '25px',
@@ -107,7 +107,7 @@ export function ChartI() {
           5
         </button>
         <button
-          onClick={() => setTickAmount(10)}
+          onClick={() => dispatch(setChartSize(10))}
           style={{
             borderRadius: '9px',
             marginTop: '25px',
@@ -118,7 +118,7 @@ export function ChartI() {
           10
         </button>
         <button
-          onClick={() => setTickAmount(15)}
+          onClick={() => dispatch(setChartSize(15))}
           style={{
             borderRadius: '9px',
             marginTop: '25px',
@@ -129,7 +129,7 @@ export function ChartI() {
           15
         </button>
         <button
-          onClick={() => setTickAmount(20)}
+          onClick={() => dispatch(setChartSize(20))}
           style={{
             borderRadius: '9px',
             marginTop: '25px',
@@ -140,7 +140,7 @@ export function ChartI() {
           20
         </button>
         <button
-          onClick={() => setTickAmount(30)}
+          onClick={() => dispatch(setChartSize(30))}
           style={{
             borderRadius: '9px',
             marginTop: '25px',
@@ -153,7 +153,7 @@ export function ChartI() {
       </div>
 
       <button
-        onClick={() => setTickAmount(500)}
+        onClick={() => dispatch(setChartSize(500))}
         style={{
           borderRadius: '9px',
           marginTop: '25px',

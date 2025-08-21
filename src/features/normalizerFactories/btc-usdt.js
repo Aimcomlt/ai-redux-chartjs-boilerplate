@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { chartSize } from '../chartSettings';
+import { selectChartSize } from '../chartSettings/chartSettingsSlice';
 const brain = require('brain.js');
 
 const createConfig = (activation = 'tanh', overrides = {}) => ({
@@ -84,23 +84,18 @@ let brMesurementSliceColor001 = [];
   let start = 1;
   let end = 0;
 
-export const getData = ({
-    time,
-    tickAmount
-}) => async dispatch => {
+export const getData = ({ time }) => async (dispatch, getState) => {
     try{
         dispatch({
             type: "AWAITING_BITCOIN"
         })
-
-        console.log(tickAmount)
 //////////////////////////////////////////////////
 //////////////////////////////////////////////////
 
         start++; //start = 1
-        
+
         end++;
-        var grab = chartSize[0].valueOf();
+        const grab = selectChartSize(getState());
         if(end >= grab) {start = end - grab} else {start = 0};
         console.log('CHART SIZE(GRAB):', grab, 'START VALUE: ', start, 'END VALUE: ', end);
 
