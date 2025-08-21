@@ -13,8 +13,8 @@ import {
 } from 'chart.js';
 //import { Line } from 'react-chartjs-2';
 import { Bar } from 'react-chartjs-2';
-import { useDispatch, useSelector } from 'react-redux';
-import { getData } from '../features/normalizerFactories/btc-usdt';
+import { useSelector } from 'react-redux';
+import { useGetOhlcQuery } from '../features/markets/marketApi';
 import { chartOptions } from '../charts/config';
 import { barDataset } from '../charts/datasets';
 
@@ -34,21 +34,8 @@ ChartJS.register(
 ///////////////////////////////////////////////////////////////////////
 
 export function ChartIII() {
-  const dispatch = useDispatch();
   const state = useSelector((state) => state.brain001);
-  // const [tickAmount, setTickAmount] = useState(5);
-
-  const fetchData = (time) => {
-    dispatch(
-      getData({
-        time: time,
-      }),
-    );
-    dispatch({
-      type: 'SUCCESS_BITCOIN',
-      payload: {},
-    });
-  };
+  useGetOhlcQuery({ symbol: 'BTCUSDT', interval: '1m' });
 
   const data = {
     labels: state.dataC.labels,
@@ -58,10 +45,7 @@ export function ChartIII() {
   };
 
   return (
-    <div
-      style={{ display: 'flexbox', width: '900px' }}
-      onChange={() => fetchData('min1')}
-    >
+    <div style={{ display: 'flexbox', width: '900px' }}>
       <Bar data={data} options={chartOptions} />
       <br />
     </div>
