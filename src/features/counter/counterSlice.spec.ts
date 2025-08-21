@@ -8,10 +8,10 @@ import counterReducer, {
 describe('counter reducer', () => {
   const initialState = {
     value: 3,
-    status: 'idle',
+    status: 'idle' as const,
   };
   it('should handle initial state', () => {
-    expect(counterReducer(undefined, { type: 'unknown' })).toEqual({
+    expect(counterReducer(undefined, { type: 'unknown' } as any)).toEqual({
       value: 0,
       status: 'idle',
     });

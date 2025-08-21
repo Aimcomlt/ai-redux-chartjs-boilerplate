@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import type { AppDispatch, RootState } from '../../app/store';
 import {
   decrement,
   increment,
@@ -11,9 +12,9 @@ import {
 import styles from './Counter.module.css';
 
 export function Counter() {
-  const count = useSelector(selectCount);
-  const dispatch = useDispatch();
-  const [incrementAmount, setIncrementAmount] = useState('2');
+  const count = useSelector((state: RootState) => selectCount(state));
+  const dispatch = useDispatch<AppDispatch>();
+  const [incrementAmount, setIncrementAmount] = useState<string>('2');
 
   const incrementValue = Number(incrementAmount) || 0;
 
@@ -41,7 +42,8 @@ export function Counter() {
           className={styles.textbox}
           aria-label="Set increment amount"
           value={incrementAmount}
-          onChange={(e) => setIncrementAmount(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setIncrementAmount(e.target.value)}
         />
         <button
           className={styles.button}

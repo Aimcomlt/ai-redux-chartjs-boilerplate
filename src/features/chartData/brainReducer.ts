@@ -1,4 +1,16 @@
-const initalState = {
+interface ChartDataState {
+  Loading: boolean;
+  loading?: boolean;
+  data: any;
+  dataB: any;
+}
+
+interface Action {
+  type: string;
+  payload?: any;
+}
+
+const initalState: ChartDataState = {
   Loading: false,
   data: {
     labels: [],
@@ -35,7 +47,10 @@ const initalState = {
     ],
   },
 };
-const brainReducer = (state = initalState, action) => {
+const brainReducer = (
+  state: ChartDataState = initalState,
+  action: Action,
+): ChartDataState => {
   const { type, payload } = action;
 
   switch (type) {

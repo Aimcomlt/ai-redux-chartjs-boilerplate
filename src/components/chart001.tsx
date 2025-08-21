@@ -20,6 +20,7 @@ import {
 import { chartOptions } from '../charts/config';
 import { lineDataset } from '../charts/datasets';
 import { selectPredictionSeries } from '../selectors/seriesSelectors';
+import type { AppDispatch, RootState } from '../app/store';
 
 ChartJS.register(
   CategoryScale,
@@ -33,9 +34,12 @@ ChartJS.register(
 );
 
 export function ChartI() {
-  const dispatch = useDispatch();
-  const { labels, values } = useSelector(selectPredictionSeries);
-  const tickAmount = useSelector(selectChartSize);
+  const dispatch = useDispatch<AppDispatch>();
+  const { labels, values } = useSelector<
+    RootState,
+    ReturnType<typeof selectPredictionSeries>
+  >(selectPredictionSeries);
+  const tickAmount = useSelector<RootState, number>(selectChartSize);
 
   const { refetch } = useGetOhlcQuery({ symbol: 'BTCUSDT', interval: '1m' });
   const fetchData = () => {
@@ -44,7 +48,13 @@ export function ChartI() {
 
   const data = {
     labels,
-    datasets: [lineDataset(values, 'Predictions', 'rgba(226, 153, 18, 0.9)')],
+    datasets: [
+      lineDataset(
+        values as number[],
+        'Predictions',
+        'rgba(226, 153, 18, 0.9)',
+      ),
+    ],
   };
 
   return (

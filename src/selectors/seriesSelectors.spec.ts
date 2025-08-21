@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { selectPredictionSeries, selectMetricSeries } from './seriesSelectors';
+import type { RootState } from '../app/store';
 
 describe('series selectors', () => {
   const baseState = {
@@ -7,7 +8,7 @@ describe('series selectors', () => {
       predictions: { labels: ['a', 'b'], values: [1, 2] },
       metrics: { labels: { l1: 'x', l2: 'y' }, values: { v1: 0.1, v2: 0.2 } },
     },
-  };
+  } as unknown as RootState;
 
   it('returns prediction series arrays', () => {
     const result = selectPredictionSeries(baseState);
@@ -20,7 +21,7 @@ describe('series selectors', () => {
   });
 
   it('handles empty state gracefully', () => {
-    const result = selectMetricSeries({ brain: { metrics: {} } });
+    const result = selectMetricSeries({ brain: { metrics: {} } } as unknown as RootState);
     expect(result).toEqual({ labels: [], values: [] });
   });
 });

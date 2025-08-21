@@ -1,6 +1,20 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-const initialState = {
+interface Series {
+  labels: unknown[];
+  values: unknown[];
+}
+
+interface BrainState {
+  status: string;
+  hyperparams: Record<string, unknown>;
+  predictions: Series;
+  metrics: Series;
+  modelJSON: unknown | null;
+  norm: unknown | null;
+}
+
+const initialState: BrainState = {
   status: 'idle',
   hyperparams: {},
   predictions: {
@@ -19,23 +33,26 @@ const brainSlice = createSlice({
   name: 'brain',
   initialState,
   reducers: {
-    setHyperparams(state, action) {
+    setHyperparams(state, action: PayloadAction<Record<string, unknown>>) {
       state.hyperparams = action.payload;
     },
-    setPredictions(state, action) {
+    setPredictions(state, action: PayloadAction<Partial<Series> | undefined>) {
       const { labels = [], values = [] } = action.payload || {};
       state.predictions.labels = labels;
       state.predictions.values = values;
     },
-    setMetrics(state, action) {
+    setMetrics(state, action: PayloadAction<Partial<Series> | undefined>) {
       const { labels = [], values = [] } = action.payload || {};
       state.metrics.labels = labels;
       state.metrics.values = values;
     },
-    setStatus(state, action) {
+    setStatus(state, action: PayloadAction<string>) {
       state.status = action.payload;
     },
-    setModel(state, action) {
+    setModel(
+      state,
+      action: PayloadAction<{ modelJSON?: unknown; norm?: unknown } | undefined>
+    ) {
       const { modelJSON = null, norm = null } = action.payload || {};
       state.modelJSON = modelJSON;
       state.norm = norm;
