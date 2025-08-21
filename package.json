@@ -11,6 +11,7 @@
     "react-chartjs-2": "^4.3.1",
     "react-dom": "^18.2.0",
     "react-redux": "^8.0.5",
+    "react-router-dom": "6",
     "redux-devtools-extension": "^2.13.9",
     "web-vitals": "^2.1.4"
   },
@@ -36,12 +37,12 @@
     ]
   },
   "devDependencies": {
+    "@eslint/js": "^8.57.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "@vitejs/plugin-react-swc": "^3.0.0",
-    "@eslint/js": "^8.57.0",
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.33.2",
     "globals": "^15.0.0",
