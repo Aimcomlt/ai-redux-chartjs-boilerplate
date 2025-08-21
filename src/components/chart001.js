@@ -3,6 +3,7 @@ import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
+  TimeScale,
   PointElement,
   LineElement,
   Title,
@@ -13,29 +14,19 @@ import { Line } from 'react-chartjs-2';
 import { useDispatch, useSelector } from 'react-redux';
 import { getData } from '../features/normalizerFactories/btc-usdt';
 import { chartSize } from '../features/chartSettings';
+import { chartOptions } from '../charts/config';
+import { lineDataset } from '../charts/datasets';
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
+  TimeScale,
   PointElement,
   LineElement,
   Title,
   Tooltip,
   Legend,
 );
-
-export const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: 'top',
-    },
-    title: {
-      display: true,
-      text: 'Chart.js Random Line Chart on refresh...',
-    },
-  },
-};
 
 export function ChartI() {
   const dispatch = useDispatch();
@@ -59,6 +50,14 @@ export function ChartI() {
       tickAmount,
     });
   };
+
+  const data = {
+    labels: state.data.labels,
+    datasets: state.data.datasets.map((ds) =>
+      lineDataset(ds.data, ds.label, ds.borderColor, ds.backgroundColor),
+    ),
+  };
+
   return (
     <div style={{ display: 'flexbox', width: '900px', marginTop: '30px' }}>
       <div
@@ -68,7 +67,7 @@ export function ChartI() {
           borderRadius: '9px',
         }}
       >
-        <Line data={state.data} options={{ responsive: true }} />
+        <Line data={data} options={chartOptions} />
         <br />
         <button
           kind="primary"
