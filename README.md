@@ -37,9 +37,12 @@ Vite exposes only variables prefixed with `VITE_` to client code. Define them in
 
 ```
 VITE_API_URL=https://api.example.com
+VITE_BINANCE_BASE_URL=https://api.binance.com/api/v3/
 ```
 
-Access them via `import.meta.env.VITE_API_URL`.
+Access them via `import.meta.env.VITE_API_URL`. `marketApi` reads
+`VITE_BINANCE_BASE_URL` to configure the Binance API base URL, falling back to
+Binance's public endpoint if the variable is missing.
 
 ## Screenshots
 
