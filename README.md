@@ -1,46 +1,53 @@
-# Getting Started with Create React App and Redux
+# AI Redux ChartJS Boilerplate
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) template.
+This project uses [Vite](https://vitejs.dev/), React and Redux Toolkit to experiment with Chart.js visualisations and background model training via Web Workers.
 
-## Available Scripts
+## Scripts
 
-In the project directory, you can run:
+Run these with `pnpm`:
 
-### `npm start`
+- `pnpm dev` – start the Vite development server.
+- `pnpm build` – create a production build in `dist/`.
+- `pnpm preview` – preview the production build locally.
+- `pnpm test` – execute the test suite with Vitest.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Architecture Overview
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### State flow
+The Redux store combines UI and domain slices along with RTK Query APIs. Components dispatch actions and select state from `src/app/store.js`.
 
-### `npm test`
+### Worker protocol
+Model training occurs in `src/workers/trainBrain.worker.js`. The worker expects `{ series, hyperparams, norm }` and posts `{ progress }` updates. When complete it sends `{ done: { modelJSON, norm } }` or `{ error }` on failure.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Chart composition
+Chart behaviour is centralised in `src/charts/config.ts` and `src/charts/datasets.ts` which provide reusable Chart.js configuration and dataset helpers.
 
-### `npm run build`
+### Content Security Policy (CSP)
+Deploying with a restrictive CSP is recommended:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```
+Content-Security-Policy: default-src 'self'; script-src 'self'; worker-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Adjust `connect-src` for any external APIs and avoid `unsafe-eval` to keep worker execution safe.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Environment variables
 
-### `npm run eject`
+Vite exposes only variables prefixed with `VITE_` to client code. Define them in `.env` files, e.g.:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```
+VITE_API_URL=https://api.example.com
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Access them via `import.meta.env.VITE_API_URL`.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Screenshots
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Overview
 
-## Learn More
+![Overview screenshot](https://placehold.co/600x400?text=Overview)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Model Lab
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+![Model Lab demo](https://placehold.co/600x400?text=Model+Lab)
+
