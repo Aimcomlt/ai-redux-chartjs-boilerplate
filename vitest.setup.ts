@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom';
+import React from 'react';
 import { vi } from 'vitest';
 
 // Mock window.matchMedia
@@ -60,3 +61,24 @@ HTMLCanvasElement.prototype.getContext = vi.fn(() => ({
   closePath: vi.fn(),
   stroke: vi.fn(),
 }));
+
+// Stub out react-chartjs-2 components with simple div placeholders
+vi.mock('react-chartjs-2', () => {
+  const ChartStub = ({ data }: { data?: unknown }) =>
+    React.createElement(
+      'div',
+      { 'data-testid': 'chart-output' },
+      data ? JSON.stringify(data) : null
+    );
+
+  return {
+    Line: ChartStub,
+    Bar: ChartStub,
+    Pie: ChartStub,
+    Doughnut: ChartStub,
+    Radar: ChartStub,
+    PolarArea: ChartStub,
+    Bubble: ChartStub,
+    Scatter: ChartStub,
+  } as Record<string, unknown>;
+});

@@ -2,16 +2,12 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { Provider, useSelector } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import { vi, describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import brainReducer from '../features/brain/brainSlice';
 import chartSettingsReducer from '../features/chartSettings/chartSettingsSlice';
 import { lineDataset } from '../charts/datasets';
 import { selectMetricSeries } from '../selectors/seriesSelectors';
 import { Line } from 'react-chartjs-2';
-
-vi.mock('react-chartjs-2', () => ({
-  Line: ({ data }: { data: unknown }) => <div data-testid="chart-output">{JSON.stringify(data)}</div>,
-}));
 
 const TestChart: React.FC = () => {
   const { labels, values } = useSelector(selectMetricSeries);
