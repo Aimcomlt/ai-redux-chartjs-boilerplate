@@ -1,58 +1,24 @@
-import React from 'react';
-//import { Counter } from './features/counter/Counter';
-import { ChartI } from './components/chart001';
-import { ChartII } from './components/chart002';
-import { ChartIII } from './components/chart003';
-import './App.css';
+// ============================================================
+// File: src/App.tsx (example wiring)
+// ============================================================
+import React, { useState } from 'react';
+import { Provider } from 'react-redux';
+import { store } from '@/store';
+import ChartCanvas from '@/features/charts/ChartCanvas';
+import BrainModal from '@/features/brains/BrainModal';
 
-function App() {
+export default function App() {
+  const [open, setOpen] = useState(false);
   return (
-    <div className="App">
-      <header className="App-header">
-        <ChartI />
-        <ChartII />
-        <ChartIII />
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
-    </div>
+    <Provider store={store}>
+      <div className="mx-auto max-w-5xl p-6">
+        <header className="mb-4 flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Brain Lab</h1>
+          <button onClick={() => setOpen(true)} className="rounded-xl bg-black px-4 py-2 text-white">Add Brain</button>
+        </header>
+        <ChartCanvas />
+        <BrainModal isOpen={open} onClose={() => setOpen(false)} defaultDatasetId="open" />
+      </div>
+    </Provider>
   );
 }
-
-export default App;
