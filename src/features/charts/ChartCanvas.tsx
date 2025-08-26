@@ -21,6 +21,7 @@ export const ChartCanvas: React.FC = () => {
   const chartRef = useRef<IChartApi | null>(null);
   const tooltipRef = useRef<HTMLDivElement | null>(null);
   const seriesRef = useRef<Record<string, ISeriesApi<'Line'>>>({});
+  const actualColor = useRef(assignColor('actual')).current;
 
   // Redux state
   const brains = useAppSelector((s) => s.brains);
@@ -81,7 +82,7 @@ export const ChartCanvas: React.FC = () => {
     let series = seriesRef.current[key];
     if (!series) {
       series = chart.addLineSeries({
-        color: '#2196f3',
+        color: actualColor,
         title: 'Actual Open',
         priceLineVisible: false,
       });
@@ -182,7 +183,7 @@ export const ChartCanvas: React.FC = () => {
 
       let html = `<div>${time.toLocaleString()}</div>`;
       if (actual !== undefined) {
-        html += `<div><span style="color:#2196f3">Actual: ${Number(
+        html += `<div><span style="color:${actualColor}">Actual: ${Number(
           actual,
         ).toFixed(2)}</span></div>`;
       }
@@ -237,7 +238,7 @@ export const ChartCanvas: React.FC = () => {
   };
 
   const legendItems = [
-    { id: 'actual', name: 'Actual Open', color: '#2196f3' },
+    { id: 'actual', name: 'Actual Open', color: actualColor },
     ...brains.allIds.map((id) => ({
       id,
       name: brains.byId[id]?.config.name ?? id,
