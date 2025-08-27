@@ -18,7 +18,7 @@ import type {
   SeriesPoint,
 } from '@/types/brain';
 import { assignColor } from '@/styles/ColorRegistry';
-import type { RootState } from '@/store';
+import type { RootState, AppDispatch } from '@/store';
 import type { DatasetRecord } from '@/features/datasets/datasetsSlice';
 
 export interface BrainsState {
@@ -160,6 +160,50 @@ export const trainBrainRequested = createAsyncThunk<
   },
 );
 
+export const saveBrain = createAsyncThunk<
+  void,
+  BrainId,
+  { state: RootState }
+>('brains/save', async (brainId, { getState }) => {
+  const brain = getState().brains.byId[brainId];
+  if (!brain || !brain.model?.json) return;
+  const data = {
+    metadata: {
+      config: brain.config,
+      metrics: brain.metrics,
+    },
+    model: brain.model.json,
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {
+    type: 'application/json',
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `brain_${brainId}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+});
+
+export const loadBrain = createAsyncThunk<
+  void,
+  File,
+  { dispatch: AppDispatch; state: RootState }
+>('brains/load', async (file, { dispatch, getState }) => {
+  const text = await file.text();
+  const data = JSON.parse(text);
+  const json = data.model ?? data;
+  const idFromFile: BrainId | undefined =
+    data.metadata?.config?.id ?? data.config?.id;
+  const name: string | undefined =
+    data.metadata?.config?.name ?? data.config?.name;
+  const state = getState();
+  const id = idFromFile && !state.brains.byId[idFromFile] ? idFromFile : undefined;
+  dispatch(loadBrainFromJSON({ id, name, json }));
+});
+
 const brainsSlice = createSlice({
   name: 'brains',
   initialState,
@@ -242,3 +286,5 @@ const brainsSlice = createSlice({
 export const { removeBrain, loadBrainFromJSON, trainingProgress } =
   brainsSlice.actions;
 export default brainsSlice.reducer;
+
+export { saveBrain, loadBrain };
