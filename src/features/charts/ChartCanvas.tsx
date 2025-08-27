@@ -1,7 +1,7 @@
 // ============================================================
 // File: src/features/charts/ChartCanvas.tsx
 // ============================================================
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   createChart,
   IChartApi,
@@ -9,25 +9,27 @@ import {
   LineData,
   Time,
 } from 'lightweight-charts';
-import { useAppSelector } from '@/store/hooks';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { assignColor } from '@/styles/ColorRegistry';
 import { useGetOhlcQuery } from '@/features/markets/marketApi';
-
-// Convenience type for our visibility map
-type VisibilityMap = Record<string, boolean>;
-
-export const ChartCanvas: React.FC = () => {
+import {
+  addSeries,
+  moveSeries,
+  setSeriesVisibility,
+} from '@/features/charts/chartsSlice';
+export const ChartCanvas: React.FC<{ chartId: string }> = ({ chartId }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const tooltipRef = useRef<HTMLDivElement | null>(null);
   const seriesRef = useRef<Record<string, ISeriesApi<'Line'>>>({});
   const actualColor = useRef(assignColor('actual')).current;
+  const dispatch = useAppDispatch();
 
   // Redux state
   const brains = useAppSelector((s) => s.brains);
+  const chartState = useAppSelector((s) => s.charts.byId[chartId]);
+  const seriesMeta = chartState?.series ?? [];
   const { data: ohlcData } = useGetOhlcQuery({});
-
-  const [visible, setVisible] = useState<VisibilityMap>({ actual: true });
 
   // -----------------------------------------------------------------------
   // Chart creation / disposal
@@ -95,8 +97,19 @@ export const ChartCanvas: React.FC = () => {
       }));
       series.setData(data);
     }
-    series.applyOptions({ visible: visible[key] !== false });
-  }, [ohlcData, visible]);
+    const meta = seriesMeta.find((s) => s.brainId === key);
+    series.applyOptions({ visible: meta?.visible !== false });
+  }, [ohlcData, seriesMeta]);
+
+  // ensure all brains are represented in chart series
+  useEffect(() => {
+    const existing = new Set(seriesMeta.map((s) => s.brainId));
+    brains.allIds.forEach((id) => {
+      if (!existing.has(id)) {
+        dispatch(addSeries({ chartId, brainId: id }));
+      }
+    });
+  }, [brains.allIds, seriesMeta, dispatch, chartId]);
 
   // -----------------------------------------------------------------------
   // Prediction series for each brain
@@ -108,16 +121,8 @@ export const ChartCanvas: React.FC = () => {
     const map = seriesRef.current;
     const preds = brains.predictions;
 
-    // ensure visibility state contains all ids
-    setVisible((v) => {
-      const next = { ...v };
-      Object.keys(preds).forEach((id) => {
-        if (next[id] === undefined) next[id] = true;
-      });
-      return next;
-    });
-
     Object.entries(preds).forEach(([id, seriesData]) => {
+      if (!seriesMeta.find((s) => s.brainId === id)) return;
       let series = map[id];
       if (!series) {
         const color = brains.byId[id]?.color ?? assignColor(id);
@@ -133,17 +138,19 @@ export const ChartCanvas: React.FC = () => {
         value: p.y,
       }));
       series.setData(data);
-      series.applyOptions({ visible: visible[id] !== false });
+      const meta = seriesMeta.find((s) => s.brainId === id);
+      series.applyOptions({ visible: meta?.visible !== false });
     });
 
-    // remove series that no longer have data
+    // remove series that no longer belong to this chart
     Object.keys(map).forEach((id) => {
-      if (id !== 'actual' && !preds[id]) {
+      if (id === 'actual') return;
+      if (!seriesMeta.find((s) => s.brainId === id)) {
         chart.removeSeries(map[id]);
         delete map[id];
       }
     });
-  }, [brains.predictions, brains.byId, visible]);
+  }, [brains.predictions, brains.byId, seriesMeta]);
 
   // -----------------------------------------------------------------------
   // Tooltip handling
@@ -188,7 +195,9 @@ export const ChartCanvas: React.FC = () => {
         ).toFixed(2)}</span></div>`;
       }
 
-      brains.allIds.forEach((id) => {
+      seriesMeta.forEach((ref) => {
+        const id = ref.brainId;
+        if (id === 'actual') return;
         const s = seriesRef.current[id];
         if (!s) return;
         const price = param.seriesPrices.get(s);
@@ -226,28 +235,28 @@ export const ChartCanvas: React.FC = () => {
       tooltip.remove();
       tooltipRef.current = null;
     };
-  }, [brains]);
+  }, [brains, seriesMeta]);
 
   // -----------------------------------------------------------------------
-  // Legend toggles
+  // Legend toggles and move controls
   // -----------------------------------------------------------------------
-  const toggleSeries = (id: string) => {
-    setVisible((v) => {
-      const next = { ...v, [id]: !v[id] };
-      const series = seriesRef.current[id];
-      if (series) series.applyOptions({ visible: next[id] });
-      return next;
-    });
+  const handleMoveSeries = (id: string) => {
+    const toChart = window.prompt('Move series to chart id:');
+    if (toChart) dispatch(moveSeries({ fromChartId: chartId, toChartId: toChart, brainId: id }));
   };
 
-  const legendItems = [
-    { id: 'actual', name: 'Actual Open', color: actualColor },
-    ...brains.allIds.map((id) => ({
-      id,
-      name: brains.byId[id]?.config.name ?? id,
-      color: brains.byId[id]?.color ?? assignColor(id),
-    })),
-  ];
+  const legendItems = seriesMeta.map((ref) => ({
+    id: ref.brainId,
+    name:
+      ref.brainId === 'actual'
+        ? 'Actual Open'
+        : brains.byId[ref.brainId]?.config.name ?? ref.brainId,
+    color:
+      ref.brainId === 'actual'
+        ? actualColor
+        : brains.byId[ref.brainId]?.color ?? assignColor(ref.brainId),
+    visible: ref.visible !== false,
+  }));
 
   return (
     <div className="relative rounded-2xl border p-4">
@@ -256,12 +265,24 @@ export const ChartCanvas: React.FC = () => {
         {legendItems.map((item) => (
           <label
             key={item.id}
+            onContextMenu={(e) => {
+              e.preventDefault();
+              handleMoveSeries(item.id);
+            }}
             className="flex cursor-pointer items-center gap-1 select-none"
           >
             <input
               type="checkbox"
-              checked={visible[item.id] !== false}
-              onChange={() => toggleSeries(item.id)}
+              checked={item.visible}
+              onChange={() =>
+                dispatch(
+                  setSeriesVisibility({
+                    chartId,
+                    brainId: item.id,
+                    visible: !item.visible,
+                  }),
+                )
+              }
             />
             <span style={{ color: item.color }}>{item.name}</span>
           </label>
