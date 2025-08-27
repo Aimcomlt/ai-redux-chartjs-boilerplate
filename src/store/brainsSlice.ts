@@ -1,10 +1,25 @@
 // ============================================================
 // File: src/store/brainsSlice.ts
 // ============================================================
-import { createAsyncThunk, createSlice, nanoid, PayloadAction } from '@reduxjs/toolkit';
-import type { BrainArchitecture, BrainConfig, BrainHyperparams, BrainId, BrainMetrics, BrainRecord, BrainPredictionSeries } from '@/types/brain';
-import { trainBrain } from '@/lib/brain/train';
+import {
+  createAsyncThunk,
+  createSlice,
+  nanoid,
+  PayloadAction,
+} from '@reduxjs/toolkit';
+import type {
+  BrainArchitecture,
+  BrainConfig,
+  BrainHyperparams,
+  BrainId,
+  BrainMetrics,
+  BrainRecord,
+  BrainPredictionSeries,
+  SeriesPoint,
+} from '@/types/brain';
 import { assignColor } from '@/styles/ColorRegistry';
+import type { RootState } from '@/store';
+import type { DatasetRecord } from '@/features/datasets/datasetsSlice';
 
 export interface BrainsState {
   byId: Record<BrainId, BrainRecord>;
@@ -43,14 +58,20 @@ const DEFAULT_HYPER: BrainHyperparams = {
 
 export const createBrain = createAsyncThunk(
   'brains/create',
-  async (payload: CreateBrainPayload | undefined, { dispatch }) => {
+  async (payload: CreateBrainPayload | undefined) => {
     const id = `brain_${nanoid(8)}`;
     const now = Date.now();
     const config: BrainConfig = {
       id,
       name: payload?.name ?? `Brain ${id.slice(-4)}`,
-      architecture: { ...DEFAULT_ARCH, ...(payload?.architecture ?? {}) } as any,
-      hyper: { ...DEFAULT_HYPER, ...(payload?.hyper ?? {}) } as any,
+      architecture: {
+        ...DEFAULT_ARCH,
+        ...(payload?.architecture ?? {}),
+      } as BrainArchitecture,
+      hyper: {
+        ...DEFAULT_HYPER,
+        ...(payload?.hyper ?? {}),
+      } as BrainHyperparams,
       createdAt: now,
       updatedAt: now,
     };
@@ -62,7 +83,7 @@ export const createBrain = createAsyncThunk(
     };
     // return for reducer
     return record;
-  }
+  },
 );
 
 export interface TrainBrainArgs {
@@ -70,28 +91,73 @@ export interface TrainBrainArgs {
   datasetId: string; // e.g., 'open'
 }
 
-export const trainBrainRequested = createAsyncThunk(
+interface TrainFulfilled {
+  brainId: BrainId;
+  series: BrainPredictionSeries;
+  metrics: BrainMetrics & { trainTimeMs: number };
+  modelJSON: unknown;
+}
+
+export const trainBrainRequested = createAsyncThunk<
+  TrainFulfilled,
+  TrainBrainArgs,
+  { state: RootState }
+>(
   'brains/train',
-  async ({ brainId, datasetId }: TrainBrainArgs, { getState }) => {
-    // @ts-ignore
-    const state = getState() as { brains: BrainsState, datasets: any };
+  async ({ brainId, datasetId }: TrainBrainArgs, { getState, dispatch }) => {
+    const state = getState();
     const record = state.brains.byId[brainId];
     if (!record) throw new Error('Brain not found');
 
-    // obtain dataset (baseline open) from datasets slice
-    const dataset = state.datasets?.byId?.[datasetId];
+    const dataset: DatasetRecord | undefined = state.datasets.byId?.[datasetId];
     if (!dataset) throw new Error('Dataset not found');
 
-    const { predictions, metrics, modelJSON, trainTimeMs } = await trainBrain(record.config, dataset);
+    const worker = new Worker(
+      new URL('../workers/train.worker.ts', import.meta.url),
+      {
+        type: 'module',
+      },
+    );
 
-    const series: BrainPredictionSeries = {
-      brainId,
-      points: predictions,
-    };
-
-    const result = { brainId, series, metrics: { ...metrics, trainTimeMs }, modelJSON };
-    return result;
-  }
+    return await new Promise<TrainFulfilled>((resolve, reject) => {
+      worker.onmessage = (e) => {
+        const data = e.data;
+        if (data.type === 'progress') {
+          dispatch(
+            trainingProgress({
+              brainId,
+              iter: data.iter,
+              error: data.error,
+              elapsedMs: data.elapsedMs,
+            }),
+          );
+        } else if (data.type === 'done') {
+          const { predictions, metrics, modelJSON, trainTimeMs } =
+            data.result as {
+              predictions: SeriesPoint[];
+              metrics: BrainMetrics;
+              modelJSON: unknown;
+              trainTimeMs: number;
+            };
+          const series: BrainPredictionSeries = {
+            brainId,
+            points: predictions,
+          };
+          resolve({
+            brainId,
+            series,
+            metrics: { ...metrics, trainTimeMs },
+            modelJSON,
+          });
+          worker.terminate();
+        } else if (data.type === 'error') {
+          reject(new Error(data.error));
+          worker.terminate();
+        }
+      };
+      worker.postMessage({ config: record.config, dataset, logProgress: true });
+    });
+  },
 );
 
 const brainsSlice = createSlice({
@@ -102,9 +168,12 @@ const brainsSlice = createSlice({
       const id = action.payload;
       delete state.byId[id];
       delete state.predictions[id];
-      state.allIds = state.allIds.filter(x => x !== id);
+      state.allIds = state.allIds.filter((x) => x !== id);
     },
-    loadBrainFromJSON(state, action: PayloadAction<{ id?: BrainId; name?: string; json: unknown }>) {
+    loadBrainFromJSON(
+      state,
+      action: PayloadAction<{ id?: BrainId; name?: string; json: unknown }>,
+    ) {
       const id = action.payload.id ?? `brain_${nanoid(8)}`;
       const now = Date.now();
       state.byId[id] = {
@@ -123,8 +192,23 @@ const brainsSlice = createSlice({
       };
       state.allIds.push(id);
     },
+    trainingProgress(
+      state,
+      action: PayloadAction<{
+        brainId: BrainId;
+        iter: number;
+        error: number;
+        elapsedMs: number;
+      }>,
+    ) {
+      const { brainId, iter, error, elapsedMs } = action.payload;
+      const rec = state.byId[brainId];
+      if (rec && rec.runtime.status === 'training') {
+        rec.runtime.progress = { iter, error, elapsedMs };
+      }
+    },
   },
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder
       .addCase(createBrain.fulfilled, (state, action) => {
         const rec = action.payload as BrainRecord;
@@ -132,28 +216,29 @@ const brainsSlice = createSlice({
         state.allIds.push(rec.config.id);
       })
       .addCase(trainBrainRequested.pending, (state, action) => {
-        const id = (action.meta.arg as TrainBrainArgs).brainId;
+        const id = action.meta.arg.brainId;
         const rec = state.byId[id];
         if (rec) rec.runtime = { status: 'training' };
       })
       .addCase(trainBrainRequested.fulfilled, (state, action) => {
-        const { brainId, series, metrics, modelJSON } = action.payload as any;
+        const { brainId, series, metrics, modelJSON } = action.payload;
         const rec = state.byId[brainId];
         if (rec) {
           rec.runtime = { status: 'ready' };
-          rec.metrics = metrics as BrainMetrics;
+          rec.metrics = metrics;
           rec.model = { json: modelJSON };
           rec.config.updatedAt = Date.now();
           state.predictions[brainId] = series;
         }
       })
       .addCase(trainBrainRequested.rejected, (state, action) => {
-        const id = (action.meta.arg as TrainBrainArgs).brainId;
+        const id = action.meta.arg.brainId;
         const rec = state.byId[id];
         if (rec) rec.runtime = { status: 'error', error: action.error.message };
       });
-  }
+  },
 });
 
-export const { removeBrain, loadBrainFromJSON } = brainsSlice.actions;
+export const { removeBrain, loadBrainFromJSON, trainingProgress } =
+  brainsSlice.actions;
 export default brainsSlice.reducer;

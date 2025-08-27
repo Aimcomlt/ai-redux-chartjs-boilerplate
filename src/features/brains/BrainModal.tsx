@@ -140,4 +140,3 @@ export const BrainModal: React.FC<BrainModalProps> = ({ isOpen, onClose, default
 };
 
 export default BrainModal;
-}
