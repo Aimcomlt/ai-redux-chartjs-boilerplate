@@ -4,12 +4,23 @@
 const PALETTE = [
   '#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf'
 ];
-const map = new Map<string,string>();
+const map = new Map<string, string>();
 let idx = 0;
+
 export function assignColor(key: string) {
   if (map.has(key)) return map.get(key)!;
   const color = PALETTE[idx % PALETTE.length];
   map.set(key, color);
   idx++;
   return color;
+}
+
+export function serializeColorRegistry(): [string, string][] {
+  return Array.from(map.entries());
+}
+
+export function hydrateColorRegistry(entries: [string, string][]) {
+  map.clear();
+  entries.forEach(([k, v]) => map.set(k, v));
+  idx = map.size;
 }
