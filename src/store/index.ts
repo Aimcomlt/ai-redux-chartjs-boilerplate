@@ -4,6 +4,7 @@
 import { configureStore, type PreloadedState } from '@reduxjs/toolkit';
 import brainsReducer, { type BrainsState } from '@/store/brainsSlice';
 import datasetsReducer, { type DatasetsState } from '@/features/datasets/datasetsSlice';
+import chartsReducer, { type ChartsState } from '@/features/charts/chartsSlice';
 import { loadSession, saveSession } from '@/lib/persist/session';
 
 const preloaded = loadSession();
@@ -12,9 +13,13 @@ export const store = configureStore({
   reducer: {
     brains: brainsReducer,
     datasets: datasetsReducer,
-    // charts: chartsReducer,
+    charts: chartsReducer,
   },
-  preloadedState: preloaded as PreloadedState<{ brains: BrainsState; datasets: DatasetsState }>,
+  preloadedState: preloaded as PreloadedState<{
+    brains: BrainsState;
+    datasets: DatasetsState;
+    charts: ChartsState;
+  }>,
 });
 
 store.subscribe(() => saveSession(store.getState()));
