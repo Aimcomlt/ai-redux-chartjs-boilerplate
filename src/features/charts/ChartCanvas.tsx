@@ -200,7 +200,10 @@ export const ChartCanvas: React.FC = () => {
         html += `<div><span style="color:${color}">${
           brains.byId[id]?.config.name ?? id
         }: ${Number(price).toFixed(2)}</span>`;
-        if (err !== undefined) html += ` <span>err ${err.toFixed(2)}</span>`;
+        if (err !== undefined) {
+          const pctErr = (err / Number(actual)) * 100;
+          html += ` <span>err ${err.toFixed(2)} (${pctErr.toFixed(2)}%)</span>`;
+        }
         if (metrics) {
           const parts: string[] = [];
           if (metrics.mse !== undefined) parts.push(`mse ${metrics.mse.toFixed(4)}`);
