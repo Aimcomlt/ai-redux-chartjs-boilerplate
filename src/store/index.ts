@@ -3,11 +3,12 @@
 // ============================================================
 import { configureStore } from '@reduxjs/toolkit';
 import brainsReducer from '@/store/brainsSlice';
+import datasetsReducer from '@/features/datasets/datasetsSlice';
 
 export const store = configureStore({
   reducer: {
     brains: brainsReducer,
-    // datasets: datasetsReducer, // add when ready
+    datasets: datasetsReducer,
     // charts: chartsReducer,
   },
 });

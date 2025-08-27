@@ -2,7 +2,8 @@ import React, { Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { store } from './app/store';
+import { store } from './store';
+import { loadDatasetRequested } from './features/datasets/datasetsSlice';
 import AppShell from './components/AppShell/AppShell';
 import Overview from './pages/Overview';
 import ModelLab from './pages/ModelLab';
@@ -12,6 +13,9 @@ import './index.css';
 
 const container = document.getElementById('root') as HTMLElement;
 const root = createRoot(container);
+
+// preload baseline dataset on app startup
+store.dispatch(loadDatasetRequested('open'));
 
 root.render(
   <React.StrictMode>
