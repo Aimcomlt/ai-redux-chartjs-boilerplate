@@ -1,0 +1,51 @@
+.card {
+  padding: 12px;
+  background: #ffffff;
+  border-radius: 8px;
+  border-top: 4px solid var(--accent, #e5e7eb);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s ease-in-out;
+  outline: none;
+}
+.card:hover,
+.card:focus {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.card:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+.label {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+.value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--value-color, #111827);
+}
+.helpText {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 4px;
+}
+.accent-default {
+  --accent: #e5e7eb;
+  --value-color: #111827;
+}
+.accent-blue {
+  --accent: #3b82f6;
+  --value-color: #3b82f6;
+}
+.accent-green {
+  --accent: #10b981;
+  --value-color: #10b981;
+}
+.accent-red {
+  --accent: #ef4444;
+  --value-color: #ef4444;
+}
+.accent-amber {
+  --accent: #f59e0b;
+  --value-color: #f59e0b;
+}

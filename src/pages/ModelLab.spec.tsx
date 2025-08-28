@@ -1,9 +1,13 @@
 import React from 'react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import { MemoryRouter } from 'react-router-dom';
+vi.mock('@/lib/brain/train', () => ({ trainBrain: vi.fn() }));
+vi.mock('../components/common/CompositeChart.tsx', () => ({
+  CompositeChart: () => <div />, default: () => <div />,
+}), { virtual: true });
 import trainingReducer from '@/features/training/trainingSlice';
 import datasetsReducer from '@/features/datasets/datasetsSlice';
 import ModelLab from './ModelLab';

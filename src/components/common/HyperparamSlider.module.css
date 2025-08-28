@@ -1,0 +1,19 @@
+.container {
+  margin: 8px 0;
+}
+.labelLine {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  margin-bottom: 4px;
+}
+.valueDisplay {
+  font-weight: 500;
+}
+.slider {
+  width: 100%;
+}
+.slider:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

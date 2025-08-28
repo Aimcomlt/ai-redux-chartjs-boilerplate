@@ -1,0 +1,38 @@
+.banner {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin: 8px 0;
+  font-size: 0.875rem;
+}
+.icon {
+  margin-right: 8px;
+}
+.message {
+  flex: 1;
+}
+.close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  margin-left: 8px;
+}
+.info {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+.warning {
+  background-color: #fef9c3;
+  color: #92400e;
+}
+.error {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+.success {
+  background-color: #dcfce7;
+  color: #166534;
+}
