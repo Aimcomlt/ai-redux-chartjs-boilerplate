@@ -1,9 +1,7 @@
 import React from 'react';
-import {
-  CompositeChart,
-  KpiCard,
-  DataQualityBanner,
-} from '../components/common';
+import { CompositeChart } from '../components/common/CompositeChart';
+import { KpiCard } from '../components/common/KpiCard';
+import { DataQualityBanner } from '../components/common/DataQualityBanner';
 import { useAppSelector } from '@/store/hooks';
 import { selectPredictions, selectMetrics } from '@/features/training/trainingSlice';
 import {
@@ -33,15 +31,24 @@ export const Overview: React.FC = () => {
           <section className="kpi-section">
             <KpiCard
               label="MSE"
-              value={metrics?.mse?.toFixed(4) ?? '-'}
+              value={metrics?.mse ?? '-'}
+              formatValue={(v) =>
+                typeof v === 'number' ? v.toFixed(4) : String(v)
+              }
             />
             <KpiCard
               label="MAE"
-              value={metrics?.mae?.toFixed(4) ?? '-'}
+              value={metrics?.mae ?? '-'}
+              formatValue={(v) =>
+                typeof v === 'number' ? v.toFixed(4) : String(v)
+              }
             />
             <KpiCard
               label="MAPE"
-              value={metrics?.mape?.toFixed(2) ?? '-'}
+              value={metrics?.mape ?? '-'}
+              formatValue={(v) =>
+                typeof v === 'number' ? v.toFixed(2) : String(v)
+              }
             />
           </section>
           <CompositeChart
@@ -51,7 +58,10 @@ export const Overview: React.FC = () => {
           />
         </>
       ) : (
-        <DataQualityBanner message="No training results yet" />
+        <DataQualityBanner
+          variant="warning"
+          message="No training results yet. Run a model in Model Lab to see metrics and charts."
+        />
       )}
     </div>
   );

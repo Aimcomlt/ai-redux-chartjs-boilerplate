@@ -1,15 +1,20 @@
 import React from 'react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import { MemoryRouter } from 'react-router-dom';
+vi.mock('@/lib/brain/train', () => ({ trainBrain: vi.fn() }));
+vi.mock('../components/common/CompositeChart.tsx', () => ({
+  CompositeChart: () => <div data-testid="chart" />,
+  default: () => <div data-testid="chart" />,
+}), { virtual: true });
 import trainingReducer from '@/features/training/trainingSlice';
 import datasetsReducer from '@/features/datasets/datasetsSlice';
 import Overview from './Overview';
 
 describe('Overview page', () => {
-  it('renders CompositeChart', () => {
+  it('renders warning banner when no results', () => {
     const store = configureStore({
       reducer: { training: trainingReducer, datasets: datasetsReducer },
       preloadedState: {
@@ -39,6 +44,10 @@ describe('Overview page', () => {
         </Provider>
       </MemoryRouter>
     );
-    expect(screen.getByText(/No training results yet/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /No training results yet. Run a model in Model Lab to see metrics and charts./i
+      )
+    ).toBeInTheDocument();
   });
 });

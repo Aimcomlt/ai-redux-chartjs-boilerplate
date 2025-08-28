@@ -1,29 +1,51 @@
 import React from 'react';
+import styles from './RunCard.module.css';
 
-interface RunCardProps {
+export type RunStatus = 'idle' | 'running' | 'complete' | 'error';
+
+export interface RunCardProps {
   title: string;
-  status: 'idle' | 'running' | 'complete' | 'error';
+  status: RunStatus;
+  progress?: { iter?: number; error?: number };
+  className?: string;
 }
 
-const statusColor: Record<RunCardProps['status'], string> = {
-  idle: '#ccc',
-  running: 'orange',
-  complete: 'green',
-  error: 'red',
-};
+export const RunCard: React.FC<RunCardProps> = ({
+  title,
+  status,
+  progress,
+  className,
+}) => {
+  const classes = [styles.card, styles[`status-${status}`], className]
+    .filter(Boolean)
+    .join(' ');
+  const role = status === 'error' ? 'alert' : status === 'running' ? 'status' : undefined;
 
-export const RunCard: React.FC<RunCardProps> = ({ title, status }) => (
-  <div
-    className="run-card"
-    style={{
-      border: `2px solid ${statusColor[status]}`,
-      padding: '8px',
-      borderRadius: '4px',
-    }}
-  >
-    <h4 style={{ margin: 0 }}>{title}</h4>
-    <p style={{ margin: 0 }}>{status}</p>
-  </div>
-);
+  return (
+    <div className={classes} role={role} aria-live={status === 'running' ? 'polite' : undefined}>
+      <div className={styles.header}>
+        <h4 className={styles.title}>{title}</h4>
+        <span className={styles.statusText}>{status}</span>
+      </div>
+      {status === 'running' && (
+        <>
+          <div className={styles.progressBar}>
+            <div className={styles.progressIndicator} />
+          </div>
+          {progress && (
+            <div className={styles.progressDetails}>
+              {progress.iter !== undefined && (
+                <span>Iter {progress.iter}</span>
+              )}
+              {progress.error !== undefined && (
+                <span>Error {progress.error.toFixed(4)}</span>
+              )}
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+};
 
 export default RunCard;

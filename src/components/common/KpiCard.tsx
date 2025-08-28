@@ -1,18 +1,36 @@
 import React from 'react';
+import styles from './KpiCard.module.css';
 
-interface KpiCardProps {
+export interface KpiCardProps {
   label: string;
   value: string | number;
+  helpText?: string;
+  colorScheme?: 'default' | 'blue' | 'green' | 'red' | 'amber';
+  formatValue?: (v: string | number) => string;
+  className?: string;
 }
 
-export const KpiCard: React.FC<KpiCardProps> = ({ label, value }) => (
-  <div
-    className="kpi-card"
-    style={{ border: '1px solid #ccc', padding: '8px', borderRadius: '4px' }}
-  >
-    <h3 style={{ margin: 0, fontSize: '1rem' }}>{label}</h3>
-    <p style={{ margin: 0, fontSize: '1.2rem', fontWeight: 'bold' }}>{value}</p>
-  </div>
-);
+export const KpiCard: React.FC<KpiCardProps> = ({
+  label,
+  value,
+  helpText,
+  colorScheme = 'default',
+  formatValue,
+  className,
+}) => {
+  const displayValue = formatValue ? formatValue(value) : String(value);
+  const schemeClass = styles[`accent-${colorScheme}` as keyof typeof styles];
+  const classes = [styles.card, schemeClass, className]
+    .filter(Boolean)
+    .join(' ');
+
+  return (
+    <div tabIndex={0} className={classes}>
+      <div className={styles.label}>{label}</div>
+      <div className={styles.value}>{displayValue}</div>
+      {helpText && <div className={styles.helpText}>{helpText}</div>}
+    </div>
+  );
+};
 
 export default KpiCard;

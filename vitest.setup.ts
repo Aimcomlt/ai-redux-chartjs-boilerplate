@@ -57,6 +57,25 @@ HTMLCanvasElement.prototype.getContext = vi.fn(() => ({
   stroke: vi.fn(),
 }));
 
+// Stub node-canvas and gl to avoid native bindings
+vi.mock('canvas', () => ({
+  Canvas: class {},
+  Image: class {},
+  createCanvas: () => document.createElement('canvas'),
+}), { virtual: true });
+vi.mock('gl', () => ({}), { virtual: true });
+vi.mock('chart.js', () => ({
+  Chart: class {},
+  register: () => {},
+  CategoryScale: class {},
+  LinearScale: class {},
+  PointElement: class {},
+  LineElement: class {},
+  Title: class {},
+  Tooltip: class {},
+  Legend: class {},
+}), { virtual: true });
+
 // Stub out react-chartjs-2 components with simple div placeholders
 vi.mock('react-chartjs-2', () => {
   const ChartStub = ({ data }: { data?: unknown }) =>

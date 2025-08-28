@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import {
-  DataQualityBanner,
-  HyperparamSlider,
-  RunCard,
-} from '../components/common';
+import { DataQualityBanner } from '../components/common/DataQualityBanner';
+import { HyperparamSlider } from '../components/common/HyperparamSlider';
+import { RunCard } from '../components/common/RunCard';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   selectTrainingStatus,
@@ -51,29 +49,35 @@ export const ModelLab: React.FC = () => {
   return (
     <div className="model-lab-page">
       <DataQualityBanner message={open.length ? 'Data loaded' : 'No data'} />
-      <HyperparamSlider
-        label="Learning Rate"
-        value={learningRate}
-        min={0}
-        max={1}
-        step={0.01}
-        onChange={setLearningRate}
-      />
-      <HyperparamSlider
-        label="Iterations"
-        value={iterations}
-        min={100}
-        max={5000}
-        step={100}
-        onChange={setIterations}
-      />
+      <div
+        style={{
+          padding: '16px',
+          border: '1px solid #e5e7eb',
+          borderRadius: '8px',
+          marginBottom: '16px',
+        }}
+      >
+      <h3 style={{ margin: '0 0 8px 0', fontSize: '1rem' }}>Hyperparameters</h3>
+        <HyperparamSlider
+          label="Learning Rate"
+          value={learningRate}
+          min={0}
+          max={1}
+          step={0.01}
+          precision={4}
+          onChange={setLearningRate}
+        />
+        <HyperparamSlider
+          label="Iterations"
+          value={iterations}
+          min={100}
+          max={5000}
+          step={100}
+          onChange={setIterations}
+        />
+      </div>
       <button onClick={startTraining}>Train Model</button>
-      {status === 'running' && progress ? (
-        <div aria-live="polite">
-          Iter {progress.iter} Error {progress.error.toFixed(4)}
-        </div>
-      ) : null}
-      <RunCard title="Latest Run" status={status} />
+      <RunCard title="Latest Run" status={status} progress={progress} />
     </div>
   );
 };
