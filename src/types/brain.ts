@@ -74,3 +74,13 @@ export interface BrainPredictionSeries {
   brainId: BrainId;
   points: SeriesPoint[];
 }
+
+// Prediction output from training
+export type PredictionPoint = SeriesPoint;
+
+// Metrics returned by training
+export interface TrainingMetrics {
+  mse: number;
+  mae: number;
+  mape: number;
+}
